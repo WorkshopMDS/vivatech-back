@@ -49,9 +49,16 @@ MONGO_ATLAS_PASSWORD=
 make up
 ```
 
-**:tada: It's live! Go to (http://localhost:4000)[http://localhost:4000]**
+**:tada:  It's live! Go to [http://localhost:4000](http://localhost:4000)**
 
 ## Others commands who can help
+
+- Down container
+
+```sh
+make down
+```
+
 
 - Rebuild docker image
 
