@@ -4,13 +4,13 @@ services:
     container_name: viva_api
     restart: on-failure
     build:
-      context: ./app
-      dockerfile: ../Dockerfile
+      context: .
+      dockerfile: ./Dockerfile
       target: base
     image: node_vivatech
     volumes:
-      - ./app/src:/usr/src/app/src
-      - ./app/nodemon.json:/home/node/app/nodemon.json
+      - ./src:/usr/src
+      - ./nodemon.json:/home/node/app/nodemon.json
     env_file:
       - .env
     ports:
