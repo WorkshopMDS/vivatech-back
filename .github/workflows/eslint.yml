@@ -1,0 +1,28 @@
+name: Lint
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  NODE_VERSION: 16
+
+jobs:
+  linting:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Code Linting
+        run: yarn lint
