@@ -3,9 +3,11 @@ import request from 'supertest';
 
 import app from '../app';
 
+const URI = `mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PASSWORD}@${process.env.MONGO_ATLAS_ADDRESS}/${process.env.MONGO_ATLAS_DATABASE}?retryWrites=true&w=majority`;
+
 describe('GET /users', () => {
   beforeEach(async () => {
-    await mongoose.connect(process.env.MONGO_URI as string);
+    await mongoose.connect(URI);
   });
 
   afterEach(async () => {
