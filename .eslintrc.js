@@ -27,8 +27,8 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: ['node_modules', 'build', 'dist', 'public'],
-  plugins: ['@typescript-eslint', 'prettier'],
+  ignorePatterns: ['node_modules', 'build', 'dist', 'public', 'jest.config.js'],
+  plugins: ['@typescript-eslint', 'prettier', 'jest'],
   rules: {
     /*
      * Default ESLint rules

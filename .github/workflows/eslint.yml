@@ -1,15 +1,15 @@
-name: Lint
+name: Lint / Tests
 on:
   pull_request:
     branches:
-      - main
-      - develop
+      - "*"
 
 env:
   NODE_VERSION: 16
 
 jobs:
-  linting:
+
+  lint:
     name: ESLint
     runs-on: ubuntu-latest
     steps:
@@ -20,9 +20,29 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install Dependencies
         run: yarn
 
       - name: Code Linting
         run: yarn lint
+
+  tests:
+    name: Run jest tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Code Linting
+        run: yarn test:verbose
