@@ -49,7 +49,7 @@ jobs:
       - name: Install Dependencies
         run: yarn
 
-      - name: Code Linting
+      - name: Launch tests
         run: yarn test
         
   deploy:
