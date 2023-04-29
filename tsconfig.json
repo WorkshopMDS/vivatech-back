@@ -10,5 +10,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*", ".eslintrc.js"],
-  "exclude": ["node_modules", ".vscode", ".idea"]
+  "exclude": [ "node_modules", ".vscode", ".idea", "./coverage", "./dist", "__tests__", "jest.config.js"]
 }

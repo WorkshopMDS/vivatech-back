@@ -51,6 +51,16 @@ make up
 
 **:tada:  It's live! Go to [http://localhost:4000](http://localhost:4000)**
 
+### Launch and configure test environment
+
+1. Duplice `setEnvVars.sample.js` file and rename it to `setEnvVars.js` 
+2. Configure all fields accordingly with your credentials (already configured in .env)
+3. You can run tests now using
+
+```sh
+make test
+```
+
 ## Others commands who can help
 
 - Down container
