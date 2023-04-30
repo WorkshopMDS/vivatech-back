@@ -2,13 +2,13 @@ install:
 	yarn install
 
 build:
-	docker-compose build
+	docker compose build
 
 up:
-	docker-compose up -d
+	docker compose up -d
 
 test:
-	yarn test:coverage
+	yarn test:verbose
 
 down:
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
