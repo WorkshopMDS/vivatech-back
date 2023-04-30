@@ -34,7 +34,7 @@ Copy `.env.sample` file, rename it to `.env` and configure all fields accordingl
 
 ```
 MONGO_ATLAS_ADDRESS=
-MONO_ATLAS_DATABASE=
+MONGO_ATLAS_DATABASE=
 MONGO_ATLAS_USERNAME=
 MONGO_ATLAS_PASSWORD=
 ```
