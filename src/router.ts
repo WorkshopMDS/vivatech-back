@@ -1,6 +1,6 @@
-import routes from './routes';
 import { NextFunction, Router, Request, Response } from 'express';
 import { errorHandler } from './middlewares/errorHandler.middleware';
+import routes from './routes';
 
 const router = Router();
 
