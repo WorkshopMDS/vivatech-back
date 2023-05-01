@@ -1,35 +1,62 @@
 import { Response } from 'express';
-import { ApiError } from '../errors/base.error';
+import { ApiResponse } from '../responses/api.response';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 
 class ErrorHandler {
-  private isTrustedError(error: Error): boolean {
-    if (error instanceof ApiError) {
+  private isTrustedError(error: Error | ApiResponse): boolean {
+    if (error instanceof ApiResponse) {
       return error.isOperational;
     }
 
     return false;
-  }
+  };
 
-  public handleError(error: Error | ApiError, response?: Response): void {
+  public handleError(error: Error | ApiResponse, response?: Response): void {
     if (this.isTrustedError(error) && response) {
-      this.handleTrustedError(error as ApiError, response);
+      this.handleTrustedError(error as ApiResponse, response);
     } else {
       this.handleCriticalError(error, response);
     }
-  }
+  };
 
-  private handleTrustedError(error: ApiError, response: Response): void {
-    response.status(error.httpStatusCode).json({ message: error.message });
-  }
+  public handleTrustedError(error: ApiResponse, response: Response): void {
+    const err = JSON.parse(error.toJson());
+    response.status(error.httpStatusCode).json({
+          name: err.name,
+          httpStatusCode: err.httpStatusCode,
+          description: err.description,
+          isOperational: err.isOperational,
+          timestamp: err.timestamp,
+          data: err.data,
+    });
+  };
 
-  private handleCriticalError(error: Error | ApiError, response?: Response): void {
+  private handleCriticalError(error: Error | ApiResponse, response?: Response): void {
+    console.log(error, error instanceof ApiResponse);
     if (response) {
-      response
-        .status(HttpStatusCodes.INTERNAL_SERVER)
-        .json({ message: HttpStatusCodesDescriptions.INTERNAL_SERVER });
+      if (error instanceof ApiResponse) {
+        const err = JSON.parse(error.toJson());
+        response.status(error.httpStatusCode).json({
+          name: err.name,
+          httpStatusCode: err.httpStatusCode,
+          description: err.description,
+          isOperational: err.isOperational,
+          timestamp: err.timestamp,
+          data: err.data,
+        });
+      } else {
+        response
+          .status(HttpStatusCodes.INTERNAL_SERVER)
+          .json({ 
+            name: 'Error',
+            httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
+            message: HttpStatusCodesDescriptions.INTERNAL_SERVER,
+            isOperational: false,
+            timestamp: Date.now(),
+          });
+      }
     }
-  }
-}
+  };
+};
 
 export const errorHandler = new ErrorHandler();
