@@ -3,13 +3,14 @@ import { HttpStatusCodes, HttpStatusCodesDescriptions } from "../environments/ht
 interface ApiErrorArgs {
   name?: string;
   httpStatusCode: HttpStatusCodes;
-  description: string;
+  description: HttpStatusCodesDescriptions;
   isOperational?: boolean;
 }
 
 export class ApiError extends Error {
   public readonly name: string;
   public readonly httpStatusCode: HttpStatusCodes;
+  public readonly description: HttpStatusCodesDescriptions;
   public readonly isOperational: boolean = true;
 
   constructor(args: ApiErrorArgs) {
@@ -19,6 +20,7 @@ export class ApiError extends Error {
 
     this.name = args.name || 'Error';
     this.httpStatusCode = args.httpStatusCode;
+    this.description = args.description;
 
     if (args.isOperational !== undefined) {
       this.isOperational = args.isOperational;

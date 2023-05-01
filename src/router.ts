@@ -6,6 +6,7 @@ const router = Router();
 
 router.use('/', routes.userRoutes);
 router.use('/', routes.ticketRoutes);
+router.use('/', routes.exhibitorRoutes);
 router.use((error: Error, _request: Request, response: Response, _next: NextFunction) => {
   errorHandler.handleError(error, response);
 });

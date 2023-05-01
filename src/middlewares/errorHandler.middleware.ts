@@ -1,7 +1,6 @@
 import { Response } from 'express';
 import { ApiError } from '../errors/base.error';
-import { HttpStatusCodes } from '../environments/httpStatusCodes.environment';
-
+import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 
 class ErrorHandler {
   private isTrustedError(error: Error): boolean {
@@ -28,7 +27,7 @@ class ErrorHandler {
     if (response) {
       response
         .status(HttpStatusCodes.INTERNAL_SERVER)
-        .json({ message: 'Internal server error' });
+        .json({ message: HttpStatusCodesDescriptions.INTERNAL_SERVER });
     }
   }
 }
