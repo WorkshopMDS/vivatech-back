@@ -2,10 +2,10 @@ import { afterAll } from '@jest/globals';
 import request from 'supertest';
 
 import * as db from './configs/setup';
-import app from '../app';
-import { generateAccessToken } from '../controllers/user.controllers';
-import UserModel from '../models/user.model';
-import type { IUser, IUserDocument } from '../types/user.type';
+import app from '../../app';
+import { generateAccessToken } from '../../controllers/user.controllers';
+import UserModel from '../../models/user.model';
+import type { IUser, IUserDocument } from '../../types/user.type';
 
 describe('Users routes', () => {
   let user: IUser;
