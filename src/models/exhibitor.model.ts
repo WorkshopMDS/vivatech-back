@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-import type { IExhibitor } from '../types/exhibitor';
+import type { IExhibitor } from '../types/exhibitor.type';
 
 const exhibitorSchema: Schema = new Schema(
   {
@@ -23,4 +23,6 @@ const exhibitorSchema: Schema = new Schema(
   }
 );
 
-export default model<IExhibitor>('Exhibitor', exhibitorSchema);
+const ExhibitorModel = model<IExhibitor>('Exhibitor', exhibitorSchema);
+
+export default ExhibitorModel;

@@ -1,5 +1,5 @@
-import { userRoutes } from './user.routes';
-import { exhibitorRoutes } from './exhibitor.routes';
+import { userRoutes } from './user.route';
+import { exhibitorRoutes } from './exhibitor.route';
 
 export default {
   userRoutes,
