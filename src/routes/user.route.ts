@@ -4,4 +4,4 @@ import { getUsers } from '../controllers';
 
 export const userRoutes: Router = Router();
 
-userRoutes.get('/', getUsers);
+userRoutes.get('/users', getUsers);

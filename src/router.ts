@@ -6,8 +6,8 @@ import { HttpStatusCodes, HttpStatusCodesDescriptions } from './environments/htt
 
 const router = Router();
 
-router.use('/users', routes.userRoutes);
-router.use('/exhibitors', routes.exhibitorRoutes);
+router.use('/', routes.userRoutes);
+router.use('/', routes.exhibitorRoutes);
 router.use((_req: Request, _res: Response, next: NextFunction) => {
   next(new ApiResponse({
     name: 'Error', 
