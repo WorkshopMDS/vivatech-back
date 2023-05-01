@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
-import { getExhibitors } from '../controllers/exhibitor.controller';
+import { getExhibitors, getExhibitor } from '../controllers/exhibitor.controller';
 
 export const exhibitorRoutes: Router = Router();
 
 exhibitorRoutes.get('/', getExhibitors);
+exhibitorRoutes.get('/:id', getExhibitor)
