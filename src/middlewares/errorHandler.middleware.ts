@@ -27,7 +27,6 @@ class ErrorHandler {
           description: err.description,
           isOperational: err.isOperational,
           timestamp: err.timestamp,
-          data: err.data,
     });
   };
 
@@ -42,7 +41,6 @@ class ErrorHandler {
           description: err.description,
           isOperational: err.isOperational,
           timestamp: err.timestamp,
-          data: err.data,
         });
       } else {
         response

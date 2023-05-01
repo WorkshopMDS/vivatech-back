@@ -1,8 +1,9 @@
 import { Router } from 'express';
 
-import { getExhibitors, getExhibitor } from '../controllers/exhibitor.controller';
+import { getExhibitors, getExhibitor, addExhibitor } from '../controllers/exhibitor.controller';
 
 export const exhibitorRoutes: Router = Router();
 
-exhibitorRoutes.get('/', getExhibitors);
-exhibitorRoutes.get('/:id', getExhibitor)
+exhibitorRoutes.get('/exhibitors', getExhibitors);
+exhibitorRoutes.get('/exhibitor/:id', getExhibitor);
+exhibitorRoutes.post('/exhibitor/add', addExhibitor);
