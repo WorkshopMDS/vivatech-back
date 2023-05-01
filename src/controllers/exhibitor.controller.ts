@@ -13,22 +13,25 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<void>
   } catch (e) {
     const error: Error500 = new Error500();
     res.status(HttpStatusCodes.INTERNAL_SERVER).json({error});
+    return;
   }
 };
 
 export const getExhibitor = async (req: Request, res: Response): Promise<void> => {
   try {
     const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id);
-  
+
     if (!exhibitor) {
       const error: Error404 = new Error404();
       res.status(HttpStatusCodes.NOT_FOUND).json({error});
+      return;
     }
 
     res.status(200).json({exhibitor})
   } catch (e) {
     const error: Error500 = new Error500();
     res.status(HttpStatusCodes.INTERNAL_SERVER).json({error});
+    return;
   }
 };
 
