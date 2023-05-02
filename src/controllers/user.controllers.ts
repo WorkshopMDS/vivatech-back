@@ -91,7 +91,7 @@ export const getUsers = async (_: Request, res: Response): Promise<void> => {
     const users: IUser[] = await User.find().select(['-__v', '-_id']);
     res.status(200).json({ users });
   } catch (error) {
-    throw error;
+    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
@@ -134,5 +134,22 @@ export const deleteUser = async (req: IRequest, res: Response): Promise<void> =>
     res.status(200).json(user);
   } catch (error) {
     errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+  }
+};
+
+export const refreshAccessToken = async (req: Request, res: Response): Promise<void> => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) {
+    errorFormatter(res, 401, ErrorMessages.UNAUTHORIZED);
+    return;
+  }
+
+  try {
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET as Secret);
+    res.status(200).json({ accessToken: generateAccessToken(req.body) });
+  } catch (error) {
+    errorFormatter(res, 403, ErrorMessages.SERVER_ERROR);
   }
 };
