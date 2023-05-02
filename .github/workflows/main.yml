@@ -8,9 +8,11 @@ env:
   NODE_VERSION: 16
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   MONGO_ATLAS_ADDRESS: ${{ secrets.MONGO_ATLAS_ADDRESS }}
-  MONO_ATLAS_DATABASE: ${{ secrets.MONO_ATLAS_DATABASE }}
+  MONGO_ATLAS_DATABASE: ${{ secrets.MONO_ATLAS_DATABASE }}
   MONGO_ATLAS_USERNAME: ${{ secrets.MONGO_ATLAS_USERNAME }}
   MONGO_ATLAS_PASSWORD: ${{ secrets.MONGO_ATLAS_PASSWORD }}
+  ACCESS_TOKEN_SECRET: "ZzpPypwUKQiCLra6h72ny8DemduUwQbg"
+  REFRESH_TOKEN_SECRET: "!67t!QKTP@n8-LcZowxVUAMj43v4rmgQjzm_ju_7JCeG"
 
 jobs:
   lint:
@@ -19,7 +21,7 @@ jobs:
     steps:
       - name: Code Checkout
         uses: actions/checkout@v3
-    
+
       - name: Install NodeJS
         uses: actions/setup-node@v3
         with:
@@ -51,7 +53,7 @@ jobs:
 
       - name: Launch tests
         run: yarn test
-        
+
   deploy:
     name: CD - Fly
     runs-on: ubuntu-latest
@@ -62,6 +64,6 @@ jobs:
 
       - name: Setup flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
-      
+
       - name: Deploy
         run: flyctl deploy
