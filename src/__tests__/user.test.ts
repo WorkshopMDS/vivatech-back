@@ -1,11 +1,12 @@
 import { afterAll } from '@jest/globals';
 import request from 'supertest';
 
+import { generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
-import { generateAccessToken, generateRefreshToken } from '../controllers/user.controllers';
-import UserModel from '../models/user.model';
+import { generateRefreshToken } from '../controllers/user.controllers';
 import type { IUser, IUserDocument } from '../types/user.type';
+import { Roles } from '../utils/roles';
 
 describe('Users routes', () => {
   let user: IUser;
@@ -16,6 +17,7 @@ describe('Users routes', () => {
 
   beforeAll(async () => {
     await db.connect();
+    ({ user: adminUser, accessToken: adminAccessToken } = await generateUser(Roles.ADMIN));
   });
 
   afterAll(async () => {
@@ -42,6 +44,14 @@ describe('Users routes', () => {
       const response = await request(app).post('/register').send({
         firstname: 'Jane',
         lastname: 'Doe',
+      });
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should return an error if email is already exist in database', async () => {
+      const response = await request(app).post('/register').send({
+        email: 'jane.doe@example.com',
       });
 
       expect(response.status).toBe(400);
@@ -112,16 +122,6 @@ describe('Users routes', () => {
 
   describe('GET /users', () => {
     it('should return a list of users', async () => {
-      // Generate an admin user
-      adminUser = new UserModel({
-        firstname: 'Admin',
-        email: `admin+${new Date().toISOString()}@example.com`,
-        password: 'adminPassword',
-        role: 19518,
-      });
-      await adminUser.save();
-      adminAccessToken = generateAccessToken({ id: adminUser.id, email: adminUser.email, role: adminUser.role });
-
       const response = await request(app).get('/users').set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.status).toBe(200);
@@ -223,7 +223,6 @@ describe('Users routes', () => {
   describe('DELETE /user', () => {
     it('should let user delete is own account', async () => {
       const response = await request(app).delete('/user').set('Authorization', `Bearer ${userAccessToken}`);
-
       expect(response.status).toBe(200);
     });
 
@@ -236,12 +235,8 @@ describe('Users routes', () => {
     });
 
     it('should let admin delete other accounts', async () => {
-      const tempUser = new UserModel({
-        firstname: 'temp',
-        email: 'temp@example.com',
-        password: 'temp',
-      });
-      await tempUser.save();
+      const { user: tempUser } = await generateUser();
+
       const response = await request(app)
         .delete(`/user/${tempUser.id}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
