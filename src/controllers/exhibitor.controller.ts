@@ -6,7 +6,7 @@ import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/ht
 import ExhibitorModel from '../models/exhibitor.model';
 import { ApiResponse } from '../responses/api.response';
 
-export const getExhibitors = async (_req: Request, res: Response): Promise<void> => {
+export const getExhibitors = async (req: Request, res: Response): Promise<void> => {
   try {
     const exhibitors: IExhibitor[] = await Exhibitor.find();
     const apiResponse: ApiResponse = new ApiResponse({
@@ -15,7 +15,7 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<void>
         description: HttpStatusCodesDescriptions.SUCCESS,
         data: exhibitors,
       });
-    res.status(HttpStatusCodes.SUCCESS).json({apiResponse});
+    res.status(HttpStatusCodes.SUCCESS).json(apiResponse);
     return;
   } catch (e) {
     const error: ApiResponse = new ApiResponse({
@@ -63,13 +63,24 @@ export const getExhibitor = async (req: Request, res: Response): Promise<void> =
 
 export const addExhibitor = async (req: Request, res: Response): Promise<void> => {
   try {
-    const content = req.body as IExhibitor;
+    const { name, picture, place, sectors, interests }: IExhibitor = req.body
+
+    if (!name || !picture || !place || !sectors || !interests) {
+      const apiResponse: ApiResponse = new ApiResponse({
+        name: 'Error',
+        httpStatusCode: HttpStatusCodes.BAD_REQUEST,
+        description: HttpStatusCodesDescriptions.BAD_REQUEST,
+      })
+      res.status(HttpStatusCodes.BAD_REQUEST).json(apiResponse);
+      return;
+    }
+
     const exhibitor: IExhibitor = new ExhibitorModel({
-      name: content.name,
-      picture: content.picture,
-      place: content.place,
-      sectors: content.sectors,
-      interests: content.interests,
+      name,
+      picture,
+      place,
+      sectors,
+      interests,
     });
 
     await exhibitor.save();

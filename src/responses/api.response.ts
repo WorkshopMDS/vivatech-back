@@ -19,7 +19,7 @@ export class ApiResponse extends Error {
     this.description = args.description;
     this.isOperational = args.isOperational ?? true;
     this.timestamp = Date.now();
-    this.data = args.data ?? {};
+    this.data = args.data ?? undefined;
 
     if (args.isOperational !== undefined) {
       this.isOperational = args.isOperational;
