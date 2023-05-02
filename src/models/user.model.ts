@@ -1,12 +1,16 @@
+import { type } from 'os';
+
 import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 
 import type { IUserDocument } from '../types/user.type';
-import { hashPassword } from '../utils/functions';
+import { generateComplexPassword, hashPassword } from '../utils/functions';
 import { Roles } from '../utils/roles';
 
 const userSchema: Schema = new Schema(
   {
+    firstname: String,
+    lastname: String,
     email: {
       type: String,
       unique: true,
@@ -24,14 +28,28 @@ const userSchema: Schema = new Schema(
       type: String,
       required: true,
       select: false,
+      default: generateComplexPassword(),
     },
-    firstname: String,
-    lastname: String,
     role: {
       type: Number,
       enum: Roles,
       default: Roles.USER,
     },
+    biography: String,
+    picture: String,
+    company: {
+      name: String,
+      title: String,
+    },
+    links: [
+      {
+        type: {
+          type: String,
+          enum: ['facebook', 'twitter', 'instagram', 'linkedin', 'github', 'website', 'other'],
+        },
+        url: String,
+      },
+    ],
   },
   { timestamps: true }
 );

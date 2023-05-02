@@ -1,14 +1,24 @@
 import type { Document } from 'mongoose';
 
+import type { ILinks } from './global.type';
+
 export interface IUser {
   id: string;
   email: string;
   password: string;
-  firstname: string;
-  lastname: string;
+  firstname?: string;
+  lastname?: string;
   role: number;
-  accessToken: string;
-  refreshToken: string;
+  picture?: string;
+  biography?: string;
+  links?: [ILinks];
+  company?: {
+    name: string;
+    title: string;
+  };
+  accessToken?: string;
+  refreshToken?: string;
+  isSpeaker?: boolean;
 }
 
 export interface IUserDocument extends IUser, Omit<Document, 'id'> {
