@@ -139,17 +139,27 @@ export const deleteUser = async (req: IRequest, res: Response): Promise<void> =>
 
 export const refreshAccessToken = async (req: Request, res: Response): Promise<void> => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
+  const refreshToken = authHeader && authHeader.split(' ')[1];
 
-  if (token == null) {
+  if (refreshToken == null) {
     errorFormatter(res, 401, ErrorMessages.UNAUTHORIZED);
     return;
   }
 
   try {
-    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET as Secret);
-    res.status(200).json({ accessToken: generateAccessToken(req.body) });
+    const jwtData = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as Secret) as jwt.JwtPayload;
+    delete jwtData.iat;
+    delete jwtData.exp;
+    const user = jwtData as IUserData;
+
+    const isUserExist = await User.exists({ email: user.email });
+    if (!isUserExist) {
+      errorFormatter(res, 400, ErrorMessages.TOKEN_ERROR);
+      return;
+    }
+
+    res.status(200).json({ accessToken: generateAccessToken(user) });
   } catch (error) {
-    errorFormatter(res, 403, ErrorMessages.SERVER_ERROR);
+    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
