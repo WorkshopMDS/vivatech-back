@@ -93,6 +93,12 @@ export const exhibitor = {
         ]
     }
   },
+  deleteResponse: {
+    "name": "Success",
+    "httpStatusCode": 200,
+    "description": "Success.",
+    "isOperational": true,
+  },
   error400: {
     "name": "Error",
     "httpStatusCode": 400,

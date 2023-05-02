@@ -151,3 +151,35 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<void
     return;
   }
 };
+
+export const deleteExhibitor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const exhibitor: IExhibitor | null = await Exhibitor.findOneAndRemove({"_id": req.params.id});
+
+    if (!exhibitor) {
+      const error: ApiResponse = new ApiResponse({
+        name: 'Error', 
+        httpStatusCode: HttpStatusCodes.NOT_FOUND,
+        description: HttpStatusCodesDescriptions.NOT_FOUND,
+      });
+        res.status(HttpStatusCodes.NOT_FOUND).json(error);
+        return;
+    }
+
+    const apiResponse: ApiResponse = new ApiResponse({
+      name: 'Success',
+      httpStatusCode: HttpStatusCodes.SUCCESS,
+      description: HttpStatusCodesDescriptions.SUCCESS,
+    });
+    res.status(HttpStatusCodes.SUCCESS).json(apiResponse);
+    return;
+  } catch (e) {
+    const error: ApiResponse = new ApiResponse({
+      name: 'Error',
+      httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
+      description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
+    });
+    res.status(HttpStatusCodes.INTERNAL_SERVER).json(error);
+    return;
+  }
+};
