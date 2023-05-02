@@ -1,6 +1,14 @@
 import { Router } from 'express';
 
-import { deleteUser, getUser, getUsers, login, refreshAccessToken, register } from '../controllers/user.controllers';
+import {
+  deleteUser,
+  getUser,
+  getUsers,
+  login,
+  refreshAccessToken,
+  register,
+  updateUser,
+} from '../controllers/user.controllers';
 import { isAuthenticated } from '../middlewares/auth.middleware';
 import { checkOwnership, isInGroup } from '../middlewares/permission.middleware';
 import { Roles } from '../utils/roles';
@@ -13,5 +21,7 @@ userRoutes.post('/refreshToken', refreshAccessToken);
 userRoutes.get('/users', isAuthenticated, isInGroup([Roles.ADMIN]), getUsers);
 userRoutes.get('/user', isAuthenticated, getUser);
 userRoutes.get('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), getUser);
+userRoutes.patch('/user', isAuthenticated, updateUser);
+userRoutes.patch('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), updateUser);
 userRoutes.delete('/user', isAuthenticated, deleteUser);
 userRoutes.delete('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), deleteUser);
