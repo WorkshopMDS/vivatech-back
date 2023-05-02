@@ -63,4 +63,12 @@ userSchema.methods.isPasswordValid = function (password: string) {
   return bcrypt.compareSync(password, this.password);
 };
 
+userSchema.set('toJSON', {
+  transform(doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
+
 export default model<IUserDocument>('Users', userSchema);
