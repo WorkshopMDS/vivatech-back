@@ -46,7 +46,7 @@ export const checkTicket = async (req: Request, res: Response): Promise<void> =>
 
     const ticket: ITicket | null = await Ticket.findOne({ ticketId }).select(['-__v', '-_id']);
     if (!ticket) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
+      errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
       return;
     }
 
