@@ -8,7 +8,7 @@ const URI = `mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MON
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   mongoose
-    .connect(URI)
+    .connect(URI, { })
     .then(() => console.log('Connected to database!'))
     .catch((error) => {
       throw error;
