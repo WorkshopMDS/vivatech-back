@@ -54,6 +54,7 @@ describe('Users routes', () => {
       user = response.body;
 
       expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty('firstname');
       expect(response.body).toHaveProperty('lastname');
       expect(response.body).toHaveProperty('email');
@@ -176,6 +177,46 @@ describe('Users routes', () => {
 
       expect(response.status).toBe(400);
       expect(response.body).not.toHaveProperty('accessToken');
+    });
+  });
+
+  describe('PATCH /user', () => {
+    it('should let user update is own account', async () => {
+      const response = await request(app).patch('/user').set('Authorization', `Bearer ${userAccessToken}`).send({
+        firstname: 'Edited',
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.firstname).toBe('Edited');
+    });
+
+    it('should not add unknown field', async () => {
+      const response = await request(app).patch('/user').set('Authorization', `Bearer ${userAccessToken}`).send({
+        unknown: 'Edited',
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body).not.toHaveProperty('unknown');
+    });
+
+    it('should return an error when user wants to update other accounts', async () => {
+      const response = await request(app)
+        .patch(`/user/${adminUser.id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('should let admin update other accounts', async () => {
+      const response = await request(app)
+        .patch(`/user/${user.id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send({
+          firstname: 'Edited',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.firstname).toBe('Edited');
     });
   });
 

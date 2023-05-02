@@ -89,7 +89,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const getUsers = async (_: Request, res: Response): Promise<void> => {
   try {
-    const users: IUser[] = await User.find().select(['-__v', '-_id']);
+    const users: IUser[] = await User.find().select('-id');
     res.status(200).json({ users });
   } catch (error) {
     errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
@@ -105,7 +105,7 @@ export const getUser = async (req: IRequest, res: Response): Promise<void> => {
       return;
     }
 
-    const user: IUser | null = await User.findById(userId || req.user?.id).select(['-__v', '-_id']);
+    const user: IUser | null = await User.findById(userId || req.user?.id);
     if (!user) {
       errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
       return;
@@ -139,7 +139,7 @@ export const updateUser = async (req: IRequest, res: Response): Promise<void> =>
       userId || req.user?.id,
       { $set: update },
       { returnDocument: 'after' }
-    ).select(['-__v', '-_id']);
+    ).select('-id');
     if (!user) {
       errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
       return;
@@ -160,7 +160,7 @@ export const deleteUser = async (req: IRequest, res: Response): Promise<void> =>
       return;
     }
 
-    const user: IUser | null = await User.findByIdAndDelete(userId || req.user?.id).select(['-__v', '-_id']);
+    const user: IUser | null = await User.findByIdAndDelete(userId || req.user?.id).select('-id');
     if (!user) {
       errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
       return;
