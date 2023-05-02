@@ -33,6 +33,8 @@ module.exports = {
     /*
      * Default ESLint rules
      */
+    'no-param-reassign': [2, { props: false }],
+
     'no-useless-catch': 'off',
 
     'require-yield': 'off',
