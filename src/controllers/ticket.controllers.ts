@@ -1,6 +1,5 @@
 import type { Response, Request } from 'express';
 
-import { generateRefreshToken } from './user.controllers';
 import Ticket from '../models/ticket.model';
 import type { IRequest } from '../types/global.type';
 import type { ITicket } from '../types/ticket.type';
@@ -17,7 +16,7 @@ export const getTicket = async (req: Request, res: Response): Promise<void> => {
 
     const ticket: ITicket | null = await Ticket.findOne({ ticketId }).select(['-__v', '-_id']).populate('user');
     if (!ticket) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
+      errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
       return;
     }
 
