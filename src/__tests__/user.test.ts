@@ -3,13 +3,14 @@ import request from 'supertest';
 
 import * as db from './configs/setup';
 import app from '../app';
-import { generateAccessToken } from '../controllers/user.controllers';
+import { generateAccessToken, generateRefreshToken } from '../controllers/user.controllers';
 import UserModel from '../models/user.model';
 import type { IUser, IUserDocument } from '../types/user.type';
 
 describe('Users routes', () => {
   let user: IUser;
   let userAccessToken: string;
+  let userRefreshToken: string;
   let adminUser: IUserDocument;
   let adminAccessToken: string;
 
@@ -30,6 +31,7 @@ describe('Users routes', () => {
         password: 'password',
       });
       userAccessToken = response.body.accessToken;
+      userRefreshToken = response.body.refreshToken;
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('accessToken');
@@ -52,6 +54,7 @@ describe('Users routes', () => {
       user = response.body;
 
       expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty('firstname');
       expect(response.body).toHaveProperty('lastname');
       expect(response.body).toHaveProperty('email');
@@ -73,6 +76,7 @@ describe('Users routes', () => {
         password: 'password',
       });
       userAccessToken = response.body.accessToken;
+      userRefreshToken = response.body.refreshToken;
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('accessToken');
@@ -137,6 +141,82 @@ describe('Users routes', () => {
 
       expect(response.status).toBe(401);
       expect(response.body).not.toHaveProperty('users');
+    });
+  });
+
+  describe('POST /refreshToken', () => {
+    it('should generate a new access token with refresh token', async () => {
+      const response = await request(app).post('/refreshToken').set('Authorization', `Bearer ${userRefreshToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('accessToken');
+    });
+
+    it('should return 401 if no token is provided', async () => {
+      const response = await request(app).post('/refreshToken');
+
+      expect(response.status).toBe(401);
+      expect(response.body).not.toHaveProperty('accessToken');
+    });
+
+    it('should return 400 if refresh token not exist', async () => {
+      const falseRefreshToken = generateRefreshToken({ id: 'wrongId', email: 'not-exit', role: 0 });
+      const response = await request(app).post('/refreshToken').set('Authorization', `Bearer ${falseRefreshToken}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body).not.toHaveProperty('accessToken');
+    });
+
+    it('should return 400 if refresh token is wrong format', async () => {
+      const response = await request(app)
+        .post('/refreshToken')
+        .set(
+          'Authorization',
+          `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+        );
+
+      expect(response.status).toBe(400);
+      expect(response.body).not.toHaveProperty('accessToken');
+    });
+  });
+
+  describe('PATCH /user', () => {
+    it('should let user update is own account', async () => {
+      const response = await request(app).patch('/user').set('Authorization', `Bearer ${userAccessToken}`).send({
+        firstname: 'Edited',
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.firstname).toBe('Edited');
+    });
+
+    it('should not add unknown field', async () => {
+      const response = await request(app).patch('/user').set('Authorization', `Bearer ${userAccessToken}`).send({
+        unknown: 'Edited',
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body).not.toHaveProperty('unknown');
+    });
+
+    it('should return an error when user wants to update other accounts', async () => {
+      const response = await request(app)
+        .patch(`/user/${adminUser.id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('should let admin update other accounts', async () => {
+      const response = await request(app)
+        .patch(`/user/${user.id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send({
+          firstname: 'Edited',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.firstname).toBe('Edited');
     });
   });
 

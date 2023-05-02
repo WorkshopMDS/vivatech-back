@@ -9,6 +9,7 @@ export const ErrorMessages = {
   UNAUTHORIZED: 'Authentification required.',
   FORBIDDEN: 'Access denied.',
   ALREADY_EXIST: 'Data already exist.',
+  TOKEN_ERROR: 'Error with access token.',
 };
 
 export const errorFormatter = (res: Response, code: number, message: string, error?: any) => {

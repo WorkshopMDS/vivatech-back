@@ -44,8 +44,11 @@ export const isAuthenticated = (req: IRequest, res: Response, next: NextFunction
 
   if (token == null) return errorFormatter(res, 401, 'Unauthorized');
   try {
-    const user: IUserData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as IUserData;
-    req.user = user;
+    const jwtReturn = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as jwt.JwtPayload;
+    delete jwtReturn.iat;
+    delete jwtReturn.exp;
+
+    req.user = jwtReturn as IUserData;
     return next();
   } catch (error) {
     return errorFormatter(res, 401, ErrorMessages.NOT_AUTHORIZED, error);

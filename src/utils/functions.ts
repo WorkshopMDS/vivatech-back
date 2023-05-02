@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 export const makeTicketNumber = (length: number) => {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -19,3 +21,13 @@ export const generateComplexPassword = () =>
   Math.random().toString(36).toUpperCase().slice(-2) +
   Math.random().toString(36).slice(-2) +
   Math.random().toString(36).toUpperCase().slice(-2);
+
+export const hashPassword = async (password: string) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  } catch (error) {
+    throw error;
+  }
+};
