@@ -62,6 +62,37 @@ export const exhibitor = {
         "__v": 0
     }
   },
+  update: {
+    "name": "TestUpdateExhibitor",
+    "picture": "ThisShouldBeAnURL",
+    "place": "123A",
+    "sectors": ["Female", "Woman"],
+    "interests": ["Food"]
+  },
+  invalidUpdate: {
+    "name": "TestUpdateExhibitor",
+    "picture": "ThisShouldBeAnURL",
+    "sectors": ["Female", "Woman"],
+    "interests": ["Food"]
+  },
+  updateResponse: {
+    "name": "Success",
+    "httpStatusCode": 200,
+    "description": "Success.",
+    "isOperational": true,
+    "data": {
+        "name": "TestUpdateExhibitor",
+        "picture": "ThisShouldBeAnURL",
+        "place": "123A",
+        "sectors": [
+            "Female",
+            "Woman"
+        ],
+        "interests": [
+            "Food"
+        ]
+    }
+  },
   error400: {
     "name": "Error",
     "httpStatusCode": 400,
