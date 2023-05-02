@@ -10,7 +10,7 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<void>
   try {
     const exhibitors: IExhibitor[] = await Exhibitor.find();
     const apiResponse: ApiResponse = new ApiResponse({
-        name: 'Success', 
+        name: 'Success',
         httpStatusCode: HttpStatusCodes.SUCCESS,
         description: HttpStatusCodesDescriptions.SUCCESS,
         data: exhibitors,
@@ -19,7 +19,7 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<void>
     return;
   } catch (e) {
     const error: ApiResponse = new ApiResponse({
-      name: 'Error', 
+      name: 'Error',
       httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
       description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
     });
@@ -34,7 +34,7 @@ export const getExhibitor = async (req: Request, res: Response): Promise<void> =
 
     if (!exhibitor) {
       const error: ApiResponse = new ApiResponse({
-      name: 'Error', 
+      name: 'Error',
       httpStatusCode: HttpStatusCodes.NOT_FOUND,
       description: HttpStatusCodesDescriptions.NOT_FOUND,
     });
@@ -43,7 +43,7 @@ export const getExhibitor = async (req: Request, res: Response): Promise<void> =
     }
 
     const apiResponse: ApiResponse = new ApiResponse({
-      name: 'Success', 
+      name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitor,
@@ -52,7 +52,7 @@ export const getExhibitor = async (req: Request, res: Response): Promise<void> =
     return;
   } catch (e) {
     const error: ApiResponse = new ApiResponse({
-      name: 'Error', 
+      name: 'Error',
       httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
       description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
     });
@@ -125,7 +125,7 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<void
 
     if (!exhibitor) {
       const error: ApiResponse = new ApiResponse({
-        name: 'Error', 
+        name: 'Error',
         httpStatusCode: HttpStatusCodes.NOT_FOUND,
         description: HttpStatusCodesDescriptions.NOT_FOUND,
       });
@@ -158,7 +158,7 @@ export const deleteExhibitor = async (req: Request, res: Response): Promise<void
 
     if (!exhibitor) {
       const error: ApiResponse = new ApiResponse({
-        name: 'Error', 
+        name: 'Error',
         httpStatusCode: HttpStatusCodes.NOT_FOUND,
         description: HttpStatusCodesDescriptions.NOT_FOUND,
       });
