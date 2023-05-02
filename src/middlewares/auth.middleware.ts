@@ -7,7 +7,6 @@ import UserModel from '../models/user.model';
 import type { IRequest } from '../types/global.type';
 import type { IUserData } from '../types/user.type';
 import { errorFormatter, ErrorMessages } from '../utils/errors';
-import { generateComplexPassword } from '../utils/functions';
 
 export const createUserIfNotExist = async (req: IRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -21,7 +20,6 @@ export const createUserIfNotExist = async (req: IRequest, res: Response, next: N
       firstname: req.body.firstname,
       lastname: req.body.lastname,
       email: req.body.email,
-      password: generateComplexPassword(),
     });
     await newUser.save();
 
