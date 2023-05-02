@@ -7,7 +7,7 @@ on:
 env:
   NODE_VERSION: 16
   ACCESS_TOKEN_SECRET: "ZzpPypwUKQiCLra6h72ny8DemduUwQbg"
-  REFRESH_TOKEN_SECRET: "!67t!QKTP@n8-LcZowxVUAMj43v4rmgQjzm_ju_7JCeG"
+  REFRESH_TOKEN_SECRET: "7tQKTPn8LcZowxVUAMj43v4rmgQjzmu7JCeG"
 
 jobs:
 
