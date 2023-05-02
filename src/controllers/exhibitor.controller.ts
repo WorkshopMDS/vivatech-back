@@ -5,25 +5,21 @@ import type { IExhibitor } from '../types/exhibitor.type';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import ExhibitorModel from '../models/exhibitor.model';
 import { ApiResponse } from '../responses/api.response';
+import { Errors } from '../environments/errors.environment';
+import { Error } from 'mongoose';
 
 export const getExhibitors = async (_req: Request, res: Response): Promise<void> => {
   try {
     const exhibitors: IExhibitor[] = await Exhibitor.find();
-    const apiResponse: ApiResponse = new ApiResponse({
-        name: 'Success', 
+    new ApiResponse(res, {
+        name: 'Success',
         httpStatusCode: HttpStatusCodes.SUCCESS,
         description: HttpStatusCodesDescriptions.SUCCESS,
         data: exhibitors,
       });
-    res.status(HttpStatusCodes.SUCCESS).json(apiResponse);
     return;
   } catch (e) {
-    const error: ApiResponse = new ApiResponse({
-      name: 'Error', 
-      httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
-      description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
-    });
-    res.status(HttpStatusCodes.INTERNAL_SERVER).json(error);
+    new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
     return;
   }
 };
@@ -33,30 +29,19 @@ export const getExhibitor = async (req: Request, res: Response): Promise<void> =
     const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id);
 
     if (!exhibitor) {
-      const error: ApiResponse = new ApiResponse({
-      name: 'Error', 
-      httpStatusCode: HttpStatusCodes.NOT_FOUND,
-      description: HttpStatusCodesDescriptions.NOT_FOUND,
-    });
-      res.status(HttpStatusCodes.NOT_FOUND).json(error);
+      new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
       return;
     }
 
-    const apiResponse: ApiResponse = new ApiResponse({
-      name: 'Success', 
+    new ApiResponse(res, {
+      name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitor,
     });
-    res.status(HttpStatusCodes.SUCCESS).json(apiResponse);
     return;
   } catch (e) {
-    const error: ApiResponse = new ApiResponse({
-      name: 'Error', 
-      httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
-      description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
-    });
-    res.status(HttpStatusCodes.INTERNAL_SERVER).json(error);
+    new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
     return;
   }
 };
@@ -66,12 +51,7 @@ export const addExhibitor = async (req: Request, res: Response): Promise<void> =
     const { name, picture, place, sectors, interests }: IExhibitor = req.body
 
     if (!name || !picture || !place || !sectors || !interests) {
-      const apiResponse: ApiResponse = new ApiResponse({
-        name: 'Error',
-        httpStatusCode: HttpStatusCodes.BAD_REQUEST,
-        description: HttpStatusCodesDescriptions.BAD_REQUEST,
-      });
-      res.status(HttpStatusCodes.BAD_REQUEST).json(apiResponse);
+      new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
       return;
     }
 
@@ -84,21 +64,15 @@ export const addExhibitor = async (req: Request, res: Response): Promise<void> =
     });
 
     await exhibitor.save();
-    const apiResponse: ApiResponse = new ApiResponse({
+    new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.CREATED,
       description: HttpStatusCodesDescriptions.CREATED,
       data: exhibitor,
     });
-    res.status(HttpStatusCodes.CREATED).json(apiResponse);
     return;
   } catch (e) {
-    const error: ApiResponse = new ApiResponse({
-      name: 'Error',
-      httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
-      description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
-    });
-    res.status(HttpStatusCodes.INTERNAL_SERVER).json(error);
+    new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
     return;
   }
 };
@@ -108,78 +82,52 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<void
     const { name, picture, place, sectors, interests }: IExhibitor = req.body
 
     if (!name || !picture || !place || !sectors || !interests) {
-      const apiResponse: ApiResponse = new ApiResponse({
-        name: 'Error',
-        httpStatusCode: HttpStatusCodes.BAD_REQUEST,
-        description: HttpStatusCodesDescriptions.BAD_REQUEST,
-      });
-      res.status(HttpStatusCodes.BAD_REQUEST).json(apiResponse);
+      new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
       return;
     }
 
-    const exhibitor: IExhibitor | null = await Exhibitor.findOneAndUpdate(
-      {"_id": req.params.id},
-      req.body,
+    const exhibitor: IExhibitor | null = await Exhibitor.findByIdAndUpdate(
+      req.params.id,
+      {name, picture, place, sectors, interests},
       {new: true}
     ).select(['-__v']);
 
     if (!exhibitor) {
-      const error: ApiResponse = new ApiResponse({
-        name: 'Error', 
-        httpStatusCode: HttpStatusCodes.NOT_FOUND,
-        description: HttpStatusCodesDescriptions.NOT_FOUND,
-      });
-        res.status(HttpStatusCodes.NOT_FOUND).json(error);
-        return;
+      new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
+      return;
     }
 
-    const apiResponse: ApiResponse = new ApiResponse({
+    new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitor,
     });
-    res.status(HttpStatusCodes.SUCCESS).json(apiResponse);
     return;
   } catch (e) {
-    const error: ApiResponse = new ApiResponse({
-      name: 'Error',
-      httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
-      description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
-    });
-    res.status(HttpStatusCodes.INTERNAL_SERVER).json(error);
+    new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
     return;
   }
 };
 
 export const deleteExhibitor = async (req: Request, res: Response): Promise<void> => {
   try {
-    const exhibitor: IExhibitor | null = await Exhibitor.findOneAndRemove({"_id": req.params.id});
+    const exhibitor: IExhibitor | null = await Exhibitor.findByIdAndRemove(req.params.id);
 
     if (!exhibitor) {
-      const error: ApiResponse = new ApiResponse({
-        name: 'Error', 
-        httpStatusCode: HttpStatusCodes.NOT_FOUND,
-        description: HttpStatusCodesDescriptions.NOT_FOUND,
-      });
-        res.status(HttpStatusCodes.NOT_FOUND).json(error);
-        return;
+      new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
+      return;
     }
 
-    const apiResponse: ApiResponse = new ApiResponse({
+    new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
     });
-    res.status(HttpStatusCodes.SUCCESS).json(apiResponse);
+
     return;
   } catch (e) {
-    const error: ApiResponse = new ApiResponse({
-      name: 'Error',
-      httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
-      description: HttpStatusCodesDescriptions.INTERNAL_SERVER,
-    });
-    res.status(HttpStatusCodes.INTERNAL_SERVER).json(error);
+    new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
     return;
   }
 };

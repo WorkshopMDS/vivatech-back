@@ -1,5 +1,6 @@
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from "../environments/httpStatusCodes.environment";
 import { ApiResponseInterface } from "../types/apiReponse.type";
+import { Response } from "express";
 
 export class ApiResponse extends Error {
   public readonly name: string;
@@ -9,7 +10,7 @@ export class ApiResponse extends Error {
   public readonly data?: object;
   public readonly timestamp: number;
 
-  constructor(args: ApiResponseInterface) {
+  constructor(res: Response, args: ApiResponseInterface, error?: any) {
     super(args.description);
 
     Object.setPrototypeOf(this, new.target.prototype);
@@ -26,6 +27,23 @@ export class ApiResponse extends Error {
     }
 
     Error.captureStackTrace(this);
+
+    if (process.env.NODE_ENV !== 'production' && this.httpStatusCode === HttpStatusCodes.INTERNAL_SERVER) {
+      this.data = error;
+    }
+
+    this.sendResponse(res);
+  };
+
+  sendResponse(res: Response): void {
+    res.status(this.httpStatusCode).json({
+      name: this.name,
+      httpStatusCode: this.httpStatusCode,
+      description: this.description,
+      isOperational: this.isOperational,
+      timestamp: this.timestamp,
+      data: this.data,
+    });
   };
 
   toJson(): string {
