@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const isEmailExist = await User.exists({ email });
     if (isEmailExist) {
-      errorFormatter(res, 409, ErrorMessages.ALREADY_EXIST);
+      errorFormatter(res, 400, ErrorMessages.ALREADY_EXIST);
       return;
     }
 
@@ -194,6 +194,52 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
     }
 
     res.status(200).json({ accessToken: generateAccessToken(user) });
+  } catch (error) {
+    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+  }
+};
+
+/**
+ * SPEAKERS
+ */
+
+export const getSpeakers = async (_: Request, res: Response): Promise<void> => {
+  try {
+    const speakers: IUser[] = await User.find({ role: Roles.SPEAKER });
+    res.status(200).json({ speakers });
+  } catch (error) {
+    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+  }
+};
+
+export const setUserAsSpeaker = async (req: IRequest, res: Response): Promise<void> => {
+  try {
+    const { email, firstname, lastname, password } = req.body;
+
+    const updateSpeaker: IUser | null = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          role: Roles.SPEAKER,
+        },
+      },
+      { returnDocument: 'after' }
+    ).select('-id');
+    if (!updateSpeaker) {
+      const speaker: IUserDocument = new User({
+        firstname,
+        lastname,
+        email,
+        password,
+        role: Roles.SPEAKER,
+      });
+      await speaker.save();
+
+      res.status(201).json(speaker);
+      return;
+    }
+
+    res.status(200).json(updateSpeaker);
   } catch (error) {
     errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
