@@ -37,6 +37,9 @@ MONGO_ATLAS_ADDRESS=
 MONGO_ATLAS_DATABASE=
 MONGO_ATLAS_USERNAME=
 MONGO_ATLAS_PASSWORD=
+
+ACCESS_TOKEN_SECRET=
+REFRESH_TOKEN_SECRET=
 ```
 
 *Contact an administrator if you need help for this operation*

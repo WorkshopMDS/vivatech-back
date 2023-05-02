@@ -8,7 +8,7 @@ up:
 	docker compose up -d
 
 test:
-	yarn test:verbose
+	yarn test:coverage
 
 down:
 	docker compose down --remove-orphans
