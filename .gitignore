@@ -3,4 +3,5 @@ dist
 .env
 .jest/setEnvVars.js
 coverage
-.idea
+.idea/
+.eslintcache

@@ -2,7 +2,7 @@ import type { NextFunction, Response } from 'express';
 import type { Secret } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 
-import { generateAccessToken } from '../controllers/user.controllers';
+import { generateAccessToken } from '../controllers/user.controller';
 import UserModel from '../models/user.model';
 import type { IRequest } from '../types/global.type';
 import type { IUserData } from '../types/user.type';

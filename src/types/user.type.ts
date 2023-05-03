@@ -11,7 +11,7 @@ export interface IUser {
   role: number;
   picture?: string;
   biography?: string;
-  links?: [ILinks];
+  links?: ILinks[];
   company?: {
     name: string;
     title: string;

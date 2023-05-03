@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import * as db from './configs/setup';
 import app from '../app';
-import { generateAccessToken } from '../controllers/user.controllers';
+import { generateAccessToken } from '../controllers/user.controller';
 import UserModel from '../models/user.model';
 
 describe('Tickets routes', () => {
@@ -160,7 +160,6 @@ describe('Tickets routes', () => {
     });
 
     it('should delete ticket as admin', async () => {
-      console.log(ticketId);
       const response = await request(app)
         .delete(`/ticket/${ticketId}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
