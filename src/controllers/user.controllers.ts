@@ -13,19 +13,17 @@ export const generateAccessToken = (user: IUserData) =>
 export const generateRefreshToken = (user: IUserData) =>
   jwt.sign(user, process.env.REFRESH_TOKEN_SECRET as Secret, { expiresIn: '1y' });
 
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { firstname, lastname, email, password } = req.body;
 
     if (!email || !password) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
     }
 
     const isEmailExist = await User.exists({ email });
     if (isEmailExist) {
-      errorFormatter(res, 409, ErrorMessages.ALREADY_EXIST);
-      return;
+      return errorFormatter(res, 409, ErrorMessages.ALREADY_EXIST);
     }
 
     const user: IUserDocument = new User({
@@ -42,34 +40,31 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       role: user.role,
     };
 
-    res.status(201).json({
+    return res.status(201).json({
       accessToken: generateAccessToken(returnedData),
       refreshToken: generateRefreshToken(returnedData),
     });
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
     }
 
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      errorFormatter(res, 400, ErrorMessages.CONNECTION_ERROR);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.CONNECTION_ERROR);
     }
 
     const isValid = await user.isPasswordValid(password);
     if (!isValid) {
-      errorFormatter(res, 400, ErrorMessages.CONNECTION_ERROR);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.CONNECTION_ERROR);
     }
 
     const returnedData = {
@@ -78,53 +73,50 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       role: user.role,
     };
 
-    res.status(200).json({
+    return res.status(200).json({
       accessToken: generateAccessToken(returnedData),
       refreshToken: generateRefreshToken(returnedData),
     });
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
-export const getUsers = async (_: Request, res: Response): Promise<void> => {
+export const getUsers = async (_: Request, res: Response): Promise<Response> => {
   try {
     const users: IUser[] = await User.find().select('-id');
-    res.status(200).json({ users });
+    return res.status(200).json({ users });
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
-export const getUser = async (req: IRequest, res: Response): Promise<void> => {
+export const getUser = async (req: IRequest, res: Response): Promise<Response> => {
   try {
     const { userId } = req.params;
 
     if (!userId && !req.user?.id) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
     }
 
     const user: IUser | null = await User.findById(userId || req.user?.id);
     if (!user) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
     }
 
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
-export const updateUser = async (req: IRequest, res: Response): Promise<void> => {
+export const updateUser = async (req: IRequest, res: Response): Promise<Response> => {
   try {
     const { userId } = req.params;
     const { firstname, lastname, email, password, role } = req.body;
 
     if ((!userId && !req.user?.id) || req.body === null) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
     }
 
     const update = {
@@ -141,44 +133,40 @@ export const updateUser = async (req: IRequest, res: Response): Promise<void> =>
       { returnDocument: 'after' }
     ).select('-id');
     if (!user) {
-      errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
     }
 
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
-export const deleteUser = async (req: IRequest, res: Response): Promise<void> => {
+export const deleteUser = async (req: IRequest, res: Response): Promise<Response> => {
   try {
     const { userId } = req.params;
 
     if (!userId && !req.user?.id) {
-      errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.MALFORMED_DATA);
     }
 
     const user: IUser | null = await User.findByIdAndDelete(userId || req.user?.id).select('-id');
     if (!user) {
-      errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.NOT_FOUND);
     }
 
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
 
-export const refreshAccessToken = async (req: Request, res: Response): Promise<void> => {
+export const refreshAccessToken = async (req: Request, res: Response): Promise<Response> => {
   const authHeader = req.headers.authorization;
   const refreshToken = authHeader && authHeader.split(' ')[1];
 
   if (refreshToken == null) {
-    errorFormatter(res, 401, ErrorMessages.UNAUTHORIZED);
-    return;
+    return errorFormatter(res, 401, ErrorMessages.UNAUTHORIZED);
   }
 
   try {
@@ -189,12 +177,11 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
 
     const isUserExist = await User.exists({ email: user.email });
     if (!isUserExist) {
-      errorFormatter(res, 400, ErrorMessages.TOKEN_ERROR);
-      return;
+      return errorFormatter(res, 400, ErrorMessages.TOKEN_ERROR);
     }
 
-    res.status(200).json({ accessToken: generateAccessToken(user) });
+    return res.status(200).json({ accessToken: generateAccessToken(user) });
   } catch (error) {
-    errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
+    return errorFormatter(res, 400, ErrorMessages.SERVER_ERROR, error);
   }
 };
