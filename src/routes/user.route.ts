@@ -10,7 +10,7 @@ import {
   register,
   setUserAsSpeaker,
   updateUser,
-} from '../controllers/user.controllers';
+} from '../controllers/user.controller';
 import { isAuthenticated } from '../middlewares/auth.middleware';
 import { checkOwnership, isInGroup } from '../middlewares/permission.middleware';
 import { Roles } from '../utils/roles';

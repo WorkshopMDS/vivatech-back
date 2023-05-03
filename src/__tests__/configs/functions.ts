@@ -1,4 +1,4 @@
-import { generateAccessToken } from '../../controllers/user.controllers';
+import { generateAccessToken } from '../../controllers/user.controller';
 import UserModel from '../../models/user.model';
 
 export const generateUser = async (role?: number) => {

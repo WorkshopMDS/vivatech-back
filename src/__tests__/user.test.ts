@@ -4,7 +4,7 @@ import request from 'supertest';
 import { generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
-import { generateRefreshToken } from '../controllers/user.controllers';
+import { generateRefreshToken } from '../controllers/user.controller';
 import type { IUser, IUserDocument } from '../types/user.type';
 import { Roles } from '../utils/roles';
 
