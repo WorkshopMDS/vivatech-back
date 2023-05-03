@@ -12,17 +12,16 @@ export const ErrorMessages = {
   TOKEN_ERROR: 'Error with access token.',
 };
 
-export const errorFormatter = (res: Response, code: number, message: string, error?: any) => {
+export const errorFormatter = (res: Response, code: number, message: string, error?: any): Response => {
   if (process.env.NODE_ENV === 'production') {
-    res.status(code).json({
+    return res.status(code).json({
       error: true,
       message,
-    });
-  } else {
-    res.status(code).json({
-      error: true,
-      message,
-      debug: error,
     });
   }
+  return res.status(code).json({
+    error: true,
+    message,
+    debug: error,
+  });
 };
