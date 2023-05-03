@@ -160,7 +160,6 @@ describe('Tickets routes', () => {
     });
 
     it('should delete ticket as admin', async () => {
-      console.log(ticketId);
       const response = await request(app)
         .delete(`/ticket/${ticketId}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);

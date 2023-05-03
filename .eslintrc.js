@@ -33,6 +33,7 @@ module.exports = {
     /*
      * Default ESLint rules
      */
+    'no-shadow': 'off',
     'no-param-reassign': [2, { props: false }],
     'no-underscore-dangle': 'off',
 

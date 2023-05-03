@@ -2,7 +2,7 @@ import type { Response } from 'express';
 
 import { HttpStatusCodes } from '../environments/httpStatusCodes.environment';
 import type { HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
-import type { IApiResponseInterface } from '../types/apiReponse.type';
+import type { IApiResponse } from '../types/global.type';
 
 export class ApiResponse extends Error {
   public readonly name: string;
@@ -17,7 +17,7 @@ export class ApiResponse extends Error {
 
   public readonly timestamp: number;
 
-  constructor(res: Response, args: IApiResponseInterface, error?: any) {
+  constructor(res: Response, args: IApiResponse, error?: any) {
     super(args.description);
 
     Object.setPrototypeOf(this, new.target.prototype);

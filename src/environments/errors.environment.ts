@@ -1,12 +1,9 @@
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from './httpStatusCodes.environment';
-import type { IApiResponseInterface } from '../types/apiReponse.type';
+import type { IApiResponse } from '../types/global.type';
 
 const name = 'Error';
 
-function createErrorResponse(
-  httpStatusCode: HttpStatusCodes,
-  description: HttpStatusCodesDescriptions
-): IApiResponseInterface {
+function createErrorResponse(httpStatusCode: HttpStatusCodes, description: HttpStatusCodesDescriptions): IApiResponse {
   return {
     name,
     httpStatusCode,

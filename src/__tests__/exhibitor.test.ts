@@ -3,9 +3,9 @@ import _ from 'lodash';
 import request from 'supertest';
 
 import * as db from './configs/setup';
-import app from '../app';
-import { exhibitor } from './mockups/exhibitor.mock';
 import { error } from './mockups/error.mock';
+import { exhibitor } from './mockups/exhibitor.mock';
+import app from '../app';
 
 let id: string | undefined = '';
 describe('GET /exhibitors', () => {

@@ -4,3 +4,4 @@ dist
 .jest/setEnvVars.js
 coverage
 .idea/
+.eslintcache

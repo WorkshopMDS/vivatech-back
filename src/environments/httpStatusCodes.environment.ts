@@ -10,6 +10,7 @@ export enum HttpStatusCodes {
   UNAVAILABLE = 503,
 }
 
+// eslint-disable-next-line no-shadow
 export enum HttpStatusCodesDescriptions {
   SUCCESS = 'Success.',
   CREATED = 'Successfully created.',

@@ -2,7 +2,7 @@ import type { Response } from 'express';
 
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import { ApiResponse } from '../responses/api.response';
-import type { IErrorResponse } from '../types/errorResponse.type';
+import type { IErrorResponse } from '../types/global.type';
 
 class ErrorHandler {
   private error = false;
@@ -52,7 +52,7 @@ class ErrorHandler {
   private buildErrorResponse(
     name: string,
     httpStatusCode: number,
-    description?: string,
+    description: HttpStatusCodesDescriptions,
     isOperational = true
   ): IErrorResponse {
     this.errorResponse = {

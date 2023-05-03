@@ -4,6 +4,6 @@ export interface IExhibitor extends Document {
   name: String;
   picture: String;
   place: String;
-  sectors: Array<String>;
-  interests: Array<String>;
+  sectors: String[];
+  interests: String[];
 }

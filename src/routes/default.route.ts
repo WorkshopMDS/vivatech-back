@@ -17,6 +17,6 @@ defaultRoutes.use((_req: Request, res: Response, next: NextFunction) => {
   );
 });
 
-defaultRoutes.use((error: Error | ApiResponse, _req: Request, res: Response, _next: NextFunction) => {
+defaultRoutes.use((error: Error | ApiResponse, _req: Request, res: Response) => {
   errorHandler.handleError(error, res);
 });
