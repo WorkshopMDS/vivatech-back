@@ -1,5 +1,3 @@
-import { type } from 'os';
-
 import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 
