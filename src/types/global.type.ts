@@ -1,5 +1,4 @@
 import type { Request } from 'express';
-import { Document } from 'mongoose';
 
 import type { IUser } from './user.type';
 

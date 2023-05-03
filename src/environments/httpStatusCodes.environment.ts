@@ -8,16 +8,16 @@ export enum HttpStatusCodes {
   METHOD_NOT_ALLOWED = 405,
   INTERNAL_SERVER = 500,
   UNAVAILABLE = 503,
-};
+}
 
 export enum HttpStatusCodesDescriptions {
   SUCCESS = 'Success.',
   CREATED = 'Successfully created.',
   BAD_REQUEST = 'Bad request.',
   UNAUTHORIZED = 'Must be authenticated.',
-  FORBIDDEN = 'You don\'t have the right access to execute this request.',
+  FORBIDDEN = "You don't have the right access to execute this request.",
   NOT_FOUND = 'Resource not found.',
   METHOD_NOT_ALLOWED = 'Unauthorized request method.',
   INTERNAL_SERVER = 'Internal server error.',
   UNAVAILABLE = 'Service unavailable.',
-};
+}

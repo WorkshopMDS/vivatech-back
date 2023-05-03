@@ -1,4 +1,4 @@
-import type { Document } from "mongoose";
+import type { Document } from 'mongoose';
 
 export interface IExhibitor extends Document {
   name: String;
@@ -6,4 +6,4 @@ export interface IExhibitor extends Document {
   place: String;
   sectors: Array<String>;
   interests: Array<String>;
-};
+}

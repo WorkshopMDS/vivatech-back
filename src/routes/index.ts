@@ -1,7 +1,7 @@
-import { ticketRoutes } from './ticket.routes';
-import { exhibitorRoutes } from './exhibitor.route';
 import { defaultRoutes } from './default.route';
-import { userRoutes } from './user.routes';
+import { exhibitorRoutes } from './exhibitor.route';
+import { ticketRoutes } from './ticket.route';
+import { userRoutes } from './user.route';
 
 export default {
   userRoutes,

@@ -1,16 +1,23 @@
-import { HttpStatusCodes, HttpStatusCodesDescriptions } from "../environments/httpStatusCodes.environment";
-import { ApiResponseInterface } from "../types/apiReponse.type";
-import { Response } from "express";
+import type { Response } from 'express';
+
+import { HttpStatusCodes } from '../environments/httpStatusCodes.environment';
+import type { HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
+import type { IApiResponseInterface } from '../types/apiReponse.type';
 
 export class ApiResponse extends Error {
   public readonly name: string;
+
   public readonly httpStatusCode: HttpStatusCodes;
+
   public readonly description: HttpStatusCodesDescriptions;
+
   public readonly isOperational: boolean;
+
   public readonly data?: object;
+
   public readonly timestamp: number;
 
-  constructor(res: Response, args: ApiResponseInterface, error?: any) {
+  constructor(res: Response, args: IApiResponseInterface, error?: any) {
     super(args.description);
 
     Object.setPrototypeOf(this, new.target.prototype);
@@ -33,7 +40,7 @@ export class ApiResponse extends Error {
     }
 
     this.sendResponse(res);
-  };
+  }
 
   sendResponse(res: Response): void {
     res.status(this.httpStatusCode).json({
@@ -44,7 +51,7 @@ export class ApiResponse extends Error {
       timestamp: this.timestamp,
       data: this.data,
     });
-  };
+  }
 
   toJson(): string {
     return JSON.stringify({
@@ -55,5 +62,5 @@ export class ApiResponse extends Error {
       timestamp: this.timestamp,
       data: this.data,
     });
-  };
+  }
 }

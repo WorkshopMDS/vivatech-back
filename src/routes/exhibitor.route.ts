@@ -1,6 +1,12 @@
 import { Router } from 'express';
 
-import { getExhibitors, getExhibitor, addExhibitor, updateExhibitor, deleteExhibitor } from '../controllers/exhibitor.controller';
+import {
+  getExhibitors,
+  getExhibitor,
+  addExhibitor,
+  updateExhibitor,
+  deleteExhibitor,
+} from '../controllers/exhibitor.controller';
 
 export const exhibitorRoutes: Router = Router();
 
