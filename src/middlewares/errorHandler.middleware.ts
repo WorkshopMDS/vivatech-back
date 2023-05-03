@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { ApiResponse } from '../responses/api.response';
+import { ErrorResponse } from '../types/errorResponse.type';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 
 class ErrorHandler {
@@ -21,40 +22,37 @@ class ErrorHandler {
 
   public handleTrustedError(error: ApiResponse, response: Response): void {
     const err = JSON.parse(error.toJson());
-    response.status(error.httpStatusCode).json({
-          name: err.name,
-          httpStatusCode: err.httpStatusCode,
-          description: err.description,
-          isOperational: err.isOperational,
-          timestamp: err.timestamp,
-    });
+    const errResponse = this.buildErrorResponse(err.name, err.httpStatusCode, err.description, err.isOperational);
+    response.status(error.httpStatusCode).json(errResponse);
   };
 
   private handleCriticalError(error: Error | ApiResponse, response?: Response): void {
-    console.log(error, error instanceof ApiResponse);
     if (response) {
       if (error instanceof ApiResponse) {
         const err = JSON.parse(error.toJson());
-        response.status(error.httpStatusCode).json({
-          name: err.name,
-          httpStatusCode: err.httpStatusCode,
-          description: err.description,
-          isOperational: err.isOperational,
-          timestamp: err.timestamp,
-        });
+        const errResponse = this.buildErrorResponse(err.name, err.httpStatusCode, err.description, err.isOperational);
+        response.status(error.httpStatusCode).json(errResponse);
       } else {
-        response
-          .status(HttpStatusCodes.INTERNAL_SERVER)
-          .json({ 
-            name: 'Error',
-            httpStatusCode: HttpStatusCodes.INTERNAL_SERVER,
-            message: HttpStatusCodesDescriptions.INTERNAL_SERVER,
-            isOperational: false,
-            timestamp: Date.now(),
-          });
+        const errResponse = this.buildErrorResponse(
+          'Error', 
+          HttpStatusCodes.INTERNAL_SERVER, 
+          HttpStatusCodesDescriptions.INTERNAL_SERVER, 
+          false
+        );
+        response.status(HttpStatusCodes.INTERNAL_SERVER).json(errResponse);
       }
     }
   };
+
+  private buildErrorResponse(name: string, httpStatusCode: number, description?: string, isOperational = true): ErrorResponse {
+    return {
+      name,
+      httpStatusCode,
+      description,
+      isOperational,
+      timestamp: Date.now(),
+    };
+  }
 };
 
 export const errorHandler = new ErrorHandler();

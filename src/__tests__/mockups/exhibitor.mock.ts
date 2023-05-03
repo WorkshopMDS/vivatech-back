@@ -78,22 +78,4 @@ export const exhibitor = {
     description: 'Success.',
     isOperational: true,
   },
-  error400: {
-    name: 'Error',
-    httpStatusCode: 400,
-    description: 'Bad request.',
-    isOperational: true,
-  },
-  error404: {
-    name: 'Error',
-    httpStatusCode: 404,
-    description: 'Resource not found.',
-    isOperational: true,
-  },
-  error500: {
-    name: 'Error',
-    httpStatusCode: 500,
-    description: 'Internal server error.',
-    isOperational: true,
-  },
 };
