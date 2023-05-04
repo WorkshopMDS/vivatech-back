@@ -20,11 +20,14 @@ export const userRoutes: Router = Router();
 userRoutes.post('/register', register);
 userRoutes.post('/login', login);
 userRoutes.post('/refreshToken', refreshAccessToken);
+
 userRoutes.get('/users', isAuthenticated, isInGroup([Roles.ADMIN]), getUsers);
 userRoutes.get('/user', isAuthenticated, getUser);
 userRoutes.get('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), getUser);
+
 userRoutes.patch('/user', isAuthenticated, updateUser);
 userRoutes.patch('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), updateUser);
+
 userRoutes.delete('/user', isAuthenticated, deleteUser);
 userRoutes.delete('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), deleteUser);
 
