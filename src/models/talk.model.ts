@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 
 import type { ITalk } from '../types/talk.type';
-import { generateSlug, hashPassword } from '../utils/functions';
+import { generateSlug } from '../utils/functions';
 
 const talkSchema: Schema = new Schema(
   {
