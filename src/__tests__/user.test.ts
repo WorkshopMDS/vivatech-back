@@ -1,10 +1,8 @@
 import { afterAll } from '@jest/globals';
-import _ from 'lodash';
 import request from 'supertest';
 
-import { expectError, generateUser, omitTimestamp } from './configs/functions';
+import { expectError, generateUser } from './configs/functions';
 import * as db from './configs/setup';
-import { error } from './mockups/error.mock';
 import app from '../app';
 import { generateRefreshToken } from '../controllers/user.controller';
 import type { IUser, IUserDocument } from '../types/user.type';
