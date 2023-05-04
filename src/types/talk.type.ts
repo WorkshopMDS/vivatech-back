@@ -4,9 +4,11 @@ import type { IUser } from './user.type';
 
 export interface ITalk extends Document {
   title: string;
-  description: string;
+  slug: string;
+  description?: string;
   speaker: IUser;
-  startDate: Date;
-  endDate: Date;
-  stage: number;
+  startDate?: Date;
+  endDate?: Date;
+  stage?: number;
+  isPublished: boolean;
 }
