@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import {
   deleteUser,
+  getSpeaker,
   getSpeakers,
   getUser,
   getUsers,
@@ -33,4 +34,5 @@ userRoutes.delete('/user/:userId', isAuthenticated, checkOwnership('Users', 'use
 
 // Speakers
 userRoutes.get('/speakers', getSpeakers);
+userRoutes.get('/speaker/:speakerId', getSpeaker);
 userRoutes.post('/speaker', isAuthenticated, isInGroup([Roles.ADMIN]), setUserAsSpeaker);
