@@ -27,3 +27,12 @@ export interface IErrorResponse extends IApiResponse {
   message?: string;
   timestamp: number;
 }
+
+export interface IError {
+  [key: number]: {
+    name: string;
+    httpStatusCode: number;
+    description: string;
+    isOperational: boolean;
+  };
+}
