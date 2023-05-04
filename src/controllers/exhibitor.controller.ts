@@ -3,8 +3,8 @@ import type { Response, Request } from 'express';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Exhibitor from '../models/exhibitor.model';
-import { ApiResponse } from '../responses/api.response';
 import type { IExhibitor } from '../types/exhibitor.type';
+import { ApiResponse } from '../utils/apiResponse';
 
 export const getExhibitors = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {

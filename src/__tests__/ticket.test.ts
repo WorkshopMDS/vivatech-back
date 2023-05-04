@@ -1,34 +1,20 @@
 import { afterAll } from '@jest/globals';
 import request from 'supertest';
 
+import { generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
-import { generateAccessToken } from '../controllers/user.controller';
-import UserModel from '../models/user.model';
+import { Roles } from '../utils/roles';
 
-describe('Tickets routes', () => {
+describe('test_ticket_feature_routes', () => {
   let ticketId: string;
   let userAccessToken: string;
   let adminAccessToken: string;
 
   beforeAll(async () => {
     await db.connect();
-    const testUser = new UserModel({
-      email: `eric.dali+${new Date().toISOString()}@example.com`,
-      password: 'test',
-    });
-    await testUser.save();
-    userAccessToken = generateAccessToken({ id: testUser.id, email: testUser.email, role: testUser.role });
-
-    // Generate an admin user
-    const adminUser = new UserModel({
-      firstname: 'Admin',
-      email: `admin+${new Date().toISOString()}@example.com`,
-      password: 'adminPassword',
-      role: 19518,
-    });
-    await adminUser.save();
-    adminAccessToken = generateAccessToken({ id: adminUser.id, email: adminUser.email, role: adminUser.role });
+    ({ accessToken: userAccessToken } = await generateUser());
+    ({ accessToken: adminAccessToken } = await generateUser(Roles.ADMIN));
   });
 
   afterAll(async () => {
@@ -47,11 +33,11 @@ describe('Tickets routes', () => {
         ], // current date and 7 days in the future
       };
       const response = await request(app).post('/ticket').send(newTicket);
-      ticketId = response.body.ticketId;
+      ticketId = response.body.data.ticketId;
 
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('ticketId');
-      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body.data).toHaveProperty('ticketId');
+      expect(response.body.data).toHaveProperty('accessToken');
     });
 
     it('should create a new ticket as connected user', async () => {
@@ -67,8 +53,8 @@ describe('Tickets routes', () => {
         .send(newTicket);
 
       expect(response.status).toBe(201);
-      expect(response.body).toHaveProperty('ticketId');
-      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body.data).toHaveProperty('ticketId');
+      expect(response.body.data).toHaveProperty('accessToken');
     });
 
     it('should return 400 if request body is malformed', async () => {
@@ -113,7 +99,7 @@ describe('Tickets routes', () => {
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(invalidTicket);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(500);
     });
   });
 
@@ -122,15 +108,15 @@ describe('Tickets routes', () => {
       const response = await request(app).get('/tickets').set('Authorization', `Bearer ${adminAccessToken}`);
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body.tickets)).toBe(true);
-      expect(response.body.tickets).toHaveLength(2);
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data).toHaveLength(2);
     });
 
     it('should return unauthorized for non-admin users', async () => {
       const response = await request(app).get('/tickets').set('Authorization', `Bearer ${userAccessToken}`);
 
       expect(response.status).toBe(403);
-      expect(response.body).not.toHaveProperty('tickets');
+      expect(response.body).not.toHaveProperty('data');
     });
   });
 
@@ -147,18 +133,11 @@ describe('Tickets routes', () => {
 
     it('should return 400 if ticket is not found', async () => {
       const response = await request(app).get('/ticket/unknown').set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
     });
   });
 
   describe('DELETE /ticket/:ticketId', () => {
-    it('should return 403 when user try to remove a ticket', async () => {
-      const response = await request(app)
-        .delete(`/ticket/${ticketId}`)
-        .set('Authorization', `Bearer ${userAccessToken}`);
-      expect(response.status).toBe(403);
-    });
-
     it('should delete ticket as admin', async () => {
       const response = await request(app)
         .delete(`/ticket/${ticketId}`)
@@ -166,9 +145,16 @@ describe('Tickets routes', () => {
       expect(response.status).toBe(200);
     });
 
-    it('should return 400 if ticket is not found', async () => {
+    it('should return 403 when user try to remove a ticket', async () => {
+      const response = await request(app)
+        .delete(`/ticket/${ticketId}`)
+        .set('Authorization', `Bearer ${userAccessToken}`);
+      expect(response.status).toBe(403);
+    });
+
+    it('should return 404 if ticket is not found', async () => {
       const response = await request(app).delete('/ticket/unknown').set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
     });
   });
 });

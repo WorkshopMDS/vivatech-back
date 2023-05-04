@@ -13,6 +13,12 @@ const exhibitorSchema: Schema = new Schema({
   interests: Array<String>,
 });
 
-const ExhibitorModel = model<IExhibitor>('Exhibitor', exhibitorSchema);
+exhibitorSchema.set('toJSON', {
+  transform(doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 
-export default ExhibitorModel;
+export default model<IExhibitor>('Exhibitor', exhibitorSchema);

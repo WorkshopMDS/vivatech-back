@@ -43,7 +43,6 @@ export const exhibitor = {
       place: '999S',
       sectors: ['Sector1', 'Sector2'],
       interests: ['Interest1', 'Interest2'],
-      __v: 0,
     },
   },
   update: {

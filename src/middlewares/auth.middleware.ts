@@ -3,10 +3,11 @@ import type { Secret } from 'jsonwebtoken';
 import jwt from 'jsonwebtoken';
 
 import { generateAccessToken } from '../controllers/user.controller';
+import { Errors } from '../environments/errors.environment';
 import UserModel from '../models/user.model';
 import type { IRequest } from '../types/global.type';
 import type { IUserData } from '../types/user.type';
-import { errorFormatter, ErrorMessages } from '../utils/errors';
+import { ApiResponse } from '../utils/apiResponse';
 
 export const createUserIfNotExist = async (req: IRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -32,7 +33,7 @@ export const createUserIfNotExist = async (req: IRequest, res: Response, next: N
 
     return next();
   } catch (error) {
-    return errorFormatter(res, 401, ErrorMessages.SERVER_ERROR, error);
+    return new ApiResponse(res, Errors.UNAUTHORIZED_RESPONSE, error);
   }
 };
 
@@ -40,7 +41,8 @@ export const isAuthenticated = (req: IRequest, res: Response, next: NextFunction
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (token == null) return errorFormatter(res, 401, 'Unauthorized');
+  if (token == null) return new ApiResponse(res, Errors.UNAUTHORIZED_RESPONSE);
+
   try {
     const jwtReturn = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as Secret) as jwt.JwtPayload;
     delete jwtReturn.iat;
@@ -49,6 +51,6 @@ export const isAuthenticated = (req: IRequest, res: Response, next: NextFunction
     req.user = jwtReturn as IUserData;
     return next();
   } catch (error) {
-    return errorFormatter(res, 401, ErrorMessages.NOT_AUTHORIZED, error);
+    return new ApiResponse(res, Errors.UNAUTHORIZED_RESPONSE, error);
   }
 };
