@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
 
 import type { ITalk } from '../types/talk.type';
-import { generateSlug } from '../utils/functions';
+import { generateSlug, hashPassword } from '../utils/functions';
 
 const talkSchema: Schema = new Schema(
   {
@@ -13,13 +13,15 @@ const talkSchema: Schema = new Schema(
     slug: {
       type: String,
       unique: true,
+      editable: false,
     },
     description: String,
-    speaker: {
-      type: Schema.Types.ObjectId,
-      ref: 'Users',
-      required: true,
-    },
+    speaker: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Users',
+      },
+    ],
     startAt: Schema.Types.Date,
     endAt: Schema.Types.Date,
     stage: Number,
@@ -27,7 +29,22 @@ const talkSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Users',
       required: true,
+      editable: false,
     },
+    updatedBy: [
+      {
+        time: {
+          type: Date,
+          default: new Date(),
+          editable: false,
+        },
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: 'Users',
+          required: true,
+        },
+      },
+    ],
     isPublished: {
       type: Boolean,
       default: false,
@@ -39,6 +56,19 @@ const talkSchema: Schema = new Schema(
 talkSchema.pre('save', async function (this, next) {
   this.slug = generateSlug(this.title);
   next();
+});
+
+talkSchema.pre('findOneAndUpdate', async function (this, next) {
+  const update: any = { ...this.getUpdate() };
+  if (!update.$set.title) return next();
+
+  try {
+    const slug = generateSlug(update.$set.title);
+    this.updateOne({}, { $set: { slug } });
+  } catch (error: any) {
+    return next(error);
+  }
+  return next();
 });
 
 talkSchema.set('toJSON', {
