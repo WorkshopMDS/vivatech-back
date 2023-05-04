@@ -1,8 +1,8 @@
 import type { Response } from 'express';
 
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
-import { ApiResponse } from '../responses/api.response';
 import type { IErrorResponse } from '../types/global.type';
+import { ApiResponse } from '../utils/apiResponse';
 
 class ErrorHandler {
   private error = false;

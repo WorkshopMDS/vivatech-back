@@ -3,7 +3,7 @@ import { Router } from 'express';
 
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import { errorHandler } from '../middlewares/errorHandler.middleware';
-import { ApiResponse } from '../responses/api.response';
+import { ApiResponse } from '../utils/apiResponse';
 
 export const defaultRoutes = Router();
 
