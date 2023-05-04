@@ -7,7 +7,7 @@ import app from '../app';
 import type { IUser, IUserDocument } from '../types/user.type';
 import { Roles } from '../utils/roles';
 
-describe('Speakers routes', () => {
+describe('test_speaker_feature_routes', () => {
   let user: IUser;
   let userAccessToken: string;
   let adminUser: IUserDocument;
@@ -30,7 +30,7 @@ describe('Speakers routes', () => {
       });
 
       expect(response.status).toBe(201);
-      expect(response.body.role).toBe(Roles.SPEAKER);
+      expect(response.body.data.role).toBe(Roles.SPEAKER);
     });
 
     it("should update a user if is exist and I'm admin", async () => {
@@ -39,7 +39,7 @@ describe('Speakers routes', () => {
       });
 
       expect(response.status).toBe(200);
-      expect(response.body.role).toBe(Roles.SPEAKER);
+      expect(response.body.data.role).toBe(Roles.SPEAKER);
     });
 
     it('should return 403 if common user try to create a user with speaker role', async () => {
@@ -64,7 +64,7 @@ describe('Speakers routes', () => {
       const response = await request(app).get('/speakers');
 
       expect(response.status).toBe(200);
-      expect(response.body.speakers).toHaveLength(2);
+      expect(response.body.data).toHaveLength(2);
     });
   });
 });
