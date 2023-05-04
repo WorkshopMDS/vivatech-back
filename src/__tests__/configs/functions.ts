@@ -1,5 +1,8 @@
+import _ from 'lodash';
+
 import { generateAccessToken } from '../../controllers/user.controller';
 import UserModel from '../../models/user.model';
+import type { ApiResponse } from '../../utils/apiResponse';
 
 export const generateUser = async (role?: number) => {
   const user = new UserModel({
@@ -14,4 +17,9 @@ export const generateUser = async (role?: number) => {
     user,
     accessToken: userAccessToken,
   };
+};
+
+export const omitTimestamp = (response: ApiResponse) => {
+  _.unset(response, 'timestamp');
+  return response;
 };

@@ -5,6 +5,18 @@ export const error = {
     description: 'Bad request.',
     isOperational: true,
   },
+  401: {
+    name: 'Error',
+    httpStatusCode: 401,
+    description: 'Must be authenticated.',
+    isOperational: true,
+  },
+  403: {
+    name: 'Error',
+    httpStatusCode: 403,
+    description: "You don't have the right access to execute this request.",
+    isOperational: true,
+  },
   404: {
     name: 'Error',
     httpStatusCode: 404,
