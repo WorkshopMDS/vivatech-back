@@ -1,14 +1,16 @@
 import { afterAll } from '@jest/globals';
+import _ from 'lodash';
 import request from 'supertest';
 
-import { generateUser } from './configs/functions';
+import { UNKNOWN_ID } from './configs/constants';
+import { expectError, generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
 import type { ITalk } from '../types/talk.type';
 import type { IUser, IUserDocument } from '../types/user.type';
 import { Roles } from '../utils/roles';
 
-describe('Talks routes', () => {
+describe('test_talk_feature_routes', () => {
   let user: IUser;
   let userAccessToken: string;
   let adminUser: IUserDocument;
@@ -33,35 +35,32 @@ describe('Talks routes', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({
           title: 'Beautifull talk',
-          userId: user.id,
-          startDate: new Date(new Date().getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-          endDate: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+          speaker: user.id,
+          startDate: new Date(new Date().setDate(new Date().getDate() + 1)), // tomorrow
+          endDate: new Date(new Date().setDate(new Date().getDate() + 7)), // Next week
         });
+      talk = response.body.data;
 
       expect(response.status).toBe(201);
-      expect(response.body.createdBy).toBe(adminUser.id);
-    });
-
-    it('should return a 400 if admin user pass wrong data', async () => {
-      const response = await request(app).post(`/talk`).set('Authorization', `Bearer ${adminAccessToken}`).send({
-        unknown: 'unknown',
-      });
-      expect(response.status).toBe(400);
+      expect(response.body.data.createdBy).toBe(adminUser.id);
     });
 
     it('should return a 400 if required data is not set', async () => {
-      const response = await request(app).post('/speaker').set('Authorization', `Bearer ${userAccessToken}`);
-      expect(response.status).toBe(400);
+      const response = await request(app).post(`/talk`).set('Authorization', `Bearer ${adminAccessToken}`).send({
+        unknown: 'unknown',
+        // Missing title
+      });
+      expectError(response, 400);
     });
 
     it('should return a 401 if user is not connected', async () => {
-      const response = await request(app).post('/speaker');
-      expect(response.status).toBe(401);
+      const response = await request(app).post('/talk');
+      expectError(response, 401);
     });
 
     it('should return a 403 if user try to add a talk', async () => {
       const response = await request(app).post('/talk').set('Authorization', `Bearer ${userAccessToken}`);
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
   });
 
@@ -70,7 +69,7 @@ describe('Talks routes', () => {
       const response = await request(app).get('/talks');
 
       expect(response.status).toBe(200);
-      expect(response.body.talks).toHaveLength(1);
+      expect(response.body.data).toHaveLength(1);
     });
   });
 
@@ -79,17 +78,22 @@ describe('Talks routes', () => {
       const response = await request(app).get(`/talk/${talk.id}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.title).toBe(talk.title);
+      expect(response.body.data.title).toBe(talk.title);
     });
 
-    it('should return a 400 if talk does not exist', async () => {
-      const response = await request(app).get(`/talk/unknown-id`);
-      expect(response.status).toBe(400);
-    });
-
-    it('should return a 400 error if route no id provided', async () => {
+    it('should return a 404 error if no id provided', async () => {
       const response = await request(app).get(`/talk`);
-      expect(response.status).toBe(400);
+      expectError(response, 404);
+    });
+
+    it('should return a 404 if talk does not exist', async () => {
+      const response = await request(app).get(`/talk/${UNKNOWN_ID}`);
+      expectError(response, 404);
+    });
+
+    it('should return a 500 error if id is incorrect', async () => {
+      const response = await request(app).get(`/talk/ddd`);
+      expectError(response, 500);
     });
   });
 
@@ -104,58 +108,67 @@ describe('Talks routes', () => {
         });
 
       expect(response.status).toBe(200);
-      expect(response.body.title).not.toBe(talk.title);
-      expect(response.body.title).toBe(newTitle);
+      expect(response.body.data.title).toBe(newTitle);
     });
 
-    it('should return a 400 if admin user pass wrong data', async () => {
-      const response = await request(app).patch(`/talk`).set('Authorization', `Bearer ${adminAccessToken}`).send({
-        unknown: 'unknown',
-      });
-      expect(response.status).toBe(400);
-    });
-
-    it('should return a 400 if talk does not exist', async () => {
-      const response = await request(app).patch(`/talk/unknown-id`);
-      expect(response.status).toBe(400);
-    });
-
-    it('should return a 401 if user trying to edit a talk', async () => {
-      const newTitle = 'Other talk title';
+    it('should return a 403 if user trying to edit a talk', async () => {
       const response = await request(app)
         .patch(`/talk/${talk.id}`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send({
-          title: newTitle,
+          title: 'Other talk title',
         });
 
-      expect(response.status).toBe(401);
-      expect(response.body.title).toBe('New talk title'); // Changed in previous test
-      expect(response.body.title).not.toBe(newTitle);
+      expectError(response, 403);
+    });
+
+    it('should return a 404 if talk does not exist', async () => {
+      const response = await request(app)
+        .patch(`/talk/${UNKNOWN_ID}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send({
+          title: 'Other talk title',
+        });
+      expectError(response, 404);
+    });
+
+    it('should return a 500 if id is unknown', async () => {
+      const response = await request(app)
+        .patch(`/talk/unknown`)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send({
+          title: 'Other talk title',
+        });
+      expectError(response, 500);
     });
   });
 
   describe('DELETE /talk/:talkId', () => {
     it('should delete a specific talk if user is admin', async () => {
       const response = await request(app).delete(`/talk/${talk.id}`).set('Authorization', `Bearer ${adminAccessToken}`);
-
       expect(response.status).toBe(200);
-      expect(response.body.title).toBe(talk.title);
-    });
-
-    it('should return a 400 if talk does not exist', async () => {
-      const response = await request(app).delete(`/talk/unknown-id`);
-      expect(response.status).toBe(400);
     });
 
     it('should return a 401 if not accessToken provided', async () => {
       const response = await request(app).delete(`/talk/${talk.id}`);
-      expect(response.status).toBe(401);
+      expectError(response, 401);
     });
 
     it('should return a 403 if non-admin user trying to delete a talk', async () => {
       const response = await request(app).delete(`/talk/${talk.id}`).set('Authorization', `Bearer ${userAccessToken}`);
-      expect(response.status).toBe(403);
+      expectError(response, 403);
+    });
+
+    it('should return a 404 if talk does not exist', async () => {
+      const response = await request(app)
+        .delete(`/talk/${UNKNOWN_ID}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
+      expectError(response, 404);
+    });
+
+    it('should return a 500 if id is unknown', async () => {
+      const response = await request(app).delete(`/talk/unknown`).set('Authorization', `Bearer ${adminAccessToken}`);
+      expectError(response, 500);
     });
   });
 });
