@@ -1,5 +1,4 @@
 import { afterAll } from '@jest/globals';
-import _ from 'lodash';
 import request from 'supertest';
 
 import { UNKNOWN_ID } from './configs/constants';
