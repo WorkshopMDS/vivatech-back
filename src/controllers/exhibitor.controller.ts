@@ -8,7 +8,7 @@ import { ApiResponse } from '../utils/apiResponse';
 
 export const getExhibitors = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const exhibitors: IExhibitor[] = await Exhibitor.find();
+    const exhibitors: IExhibitor[] = await Exhibitor.find().populate('interests');
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
