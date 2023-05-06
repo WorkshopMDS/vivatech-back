@@ -32,10 +32,30 @@ export const getInterest = async (req: Request, res: Response): Promise<ApiRespo
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
+    success.data = interest;
+    return new ApiResponse(res, success);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
+  }
+};
+
+export const addInterest = async (req: Request, res: Response): Promise<ApiResponse> => {
+  try {
+    const { label }: IInterest = req.body;
+
+    if (!label) {
+      return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
+    }
+
+    const interest: IInterest = new Interest({
+      label,
+    });
+
+    await interest.save();
     return new ApiResponse(res, {
       name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
+      httpStatusCode: HttpStatusCodes.CREATED,
+      description: HttpStatusCodesDescriptions.CREATED,
       data: interest,
     });
   } catch (e: any) {
