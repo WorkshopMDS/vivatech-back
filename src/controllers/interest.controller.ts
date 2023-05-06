@@ -23,3 +23,22 @@ export const getInterests = async (_req: Request, res: Response): Promise<ApiRes
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
+
+export const getInterest = async (req: Request, res: Response): Promise<ApiResponse> => {
+  try {
+    const interest: IInterest | null = await Interest.findById(req.params.id);
+
+    if (!interest) {
+      return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
+    }
+
+    return new ApiResponse(res, {
+      name: 'Success',
+      httpStatusCode: HttpStatusCodes.SUCCESS,
+      description: HttpStatusCodesDescriptions.SUCCESS,
+      data: interest,
+    });
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
+  }
+};

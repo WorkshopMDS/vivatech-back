@@ -22,7 +22,7 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<ApiRe
 
 export const getExhibitor = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id);
+    const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id).populate('interests');
 
     if (!exhibitor) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
@@ -60,7 +60,7 @@ export const addExhibitor = async (req: Request, res: Response): Promise<ApiResp
       name: 'Success',
       httpStatusCode: HttpStatusCodes.CREATED,
       description: HttpStatusCodesDescriptions.CREATED,
-      data: exhibitor,
+      data: exhibitor.populate('interests'),
     });
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
