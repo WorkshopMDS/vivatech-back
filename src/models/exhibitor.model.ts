@@ -24,4 +24,4 @@ exhibitorSchema.set('toJSON', {
   },
 });
 
-export default model<IExhibitor>('Exhibitor', exhibitorSchema);
+export default model<IExhibitor>('Exhibitors', exhibitorSchema);

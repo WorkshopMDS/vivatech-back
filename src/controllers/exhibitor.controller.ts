@@ -15,8 +15,8 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<ApiRe
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitors,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -34,8 +34,8 @@ export const getExhibitor = async (req: Request, res: Response): Promise<ApiResp
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitor,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -62,8 +62,8 @@ export const addExhibitor = async (req: Request, res: Response): Promise<ApiResp
       description: HttpStatusCodesDescriptions.CREATED,
       data: exhibitor,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -91,8 +91,8 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<ApiR
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitor,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -109,7 +109,7 @@ export const deleteExhibitor = async (req: Request, res: Response): Promise<ApiR
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };

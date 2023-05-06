@@ -17,4 +17,4 @@ interestSchema.set('toJSON', {
   },
 });
 
-export default model<IInterest>('Interest', interestSchema);
+export default model<IInterest>('Interests', interestSchema);

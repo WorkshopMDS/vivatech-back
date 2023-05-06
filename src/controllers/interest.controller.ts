@@ -19,7 +19,7 @@ export const getInterests = async (_req: Request, res: Response): Promise<ApiRes
 
     success.data = interests;
     return new ApiResponse(res, success);
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
