@@ -85,3 +85,21 @@ export const updateInterest = async (req: Request, res: Response): Promise<ApiRe
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
+
+export const deleteInterest = async (req: Request, res: Response): Promise<ApiResponse> => {
+  try {
+    const interest: IInterest | null = await Interest.findByIdAndRemove(req.params.id);
+
+    if (!interest) {
+      return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
+    }
+
+    return new ApiResponse(res, {
+      name: 'Success',
+      httpStatusCode: HttpStatusCodes.SUCCESS,
+      description: HttpStatusCodesDescriptions.SUCCESS,
+    });
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
+  }
+};
