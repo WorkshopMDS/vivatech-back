@@ -4,7 +4,7 @@ export const exhibitor = {
     picture: 'URL',
     place: '999S',
     sectors: ['Sector1', 'Sector2'],
-    interests: ['Interest1', 'Interest2'],
+    interests: {},
   },
   firstId: {
     name: 'Success',
@@ -16,7 +16,7 @@ export const exhibitor = {
       picture: 'URL',
       place: '999S',
       sectors: ['Sector1', 'Sector2'],
-      interests: ['Interest1', 'Interest2'],
+      interests: {},
     },
   },
   add: {
@@ -24,13 +24,13 @@ export const exhibitor = {
     picture: 'URL',
     place: '999S',
     sectors: ['Sector1', 'Sector2'],
-    interests: ['Interest1', 'Interest2'],
+    interests: '',
   },
   invalidAdd: {
     name: 'TestAddExhibitor',
     picture: 'URL',
     sectors: ['Sector1', 'Sector2'],
-    interests: ['Interest1', 'Interest2'],
+    interests: '',
   },
   addResponse: {
     name: 'Success',
@@ -42,7 +42,7 @@ export const exhibitor = {
       picture: 'URL',
       place: '999S',
       sectors: ['Sector1', 'Sector2'],
-      interests: ['Interest1', 'Interest2'],
+      interests: {},
     },
   },
   update: {
@@ -50,13 +50,13 @@ export const exhibitor = {
     picture: 'ThisShouldBeAnURL',
     place: '123A',
     sectors: ['Female', 'Woman'],
-    interests: ['Food'],
+    interests: '',
   },
   invalidUpdate: {
     name: 'TestUpdateExhibitor',
     picture: 'ThisShouldBeAnURL',
     sectors: ['Female', 'Woman'],
-    interests: ['Food'],
+    interests: '',
   },
   updateResponse: {
     name: 'Success',
@@ -68,7 +68,7 @@ export const exhibitor = {
       picture: 'ThisShouldBeAnURL',
       place: '123A',
       sectors: ['Female', 'Woman'],
-      interests: ['Food'],
+      interests: {},
     },
   },
   deleteResponse: {

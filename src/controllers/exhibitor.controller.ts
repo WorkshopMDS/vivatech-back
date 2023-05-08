@@ -60,7 +60,7 @@ export const addExhibitor = async (req: Request, res: Response): Promise<ApiResp
       name: 'Success',
       httpStatusCode: HttpStatusCodes.CREATED,
       description: HttpStatusCodesDescriptions.CREATED,
-      data: exhibitor.populate('interests'),
+      data: await exhibitor.populate('interests'),
     });
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
@@ -89,7 +89,7 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<ApiR
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: exhibitor,
+      data: await exhibitor.populate('interests'),
     });
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
