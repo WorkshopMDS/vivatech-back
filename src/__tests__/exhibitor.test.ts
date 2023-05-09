@@ -14,6 +14,7 @@ describe('test_exhibitor_feature_routes', () => {
   let exhibitorId: string;
   let userAccessToken: string;
   let adminAccessToken: string;
+  const generatedInterest: object[] = [];
   let interest: IInterest;
 
   beforeAll(async () => {
@@ -21,6 +22,7 @@ describe('test_exhibitor_feature_routes', () => {
     ({ accessToken: userAccessToken } = await generateUser());
     ({ accessToken: adminAccessToken } = await generateUser(Roles.ADMIN));
     ({ interest } = await generateInterest());
+    generatedInterest.push(interest);
   });
 
   afterAll(async () => {
@@ -35,7 +37,7 @@ describe('test_exhibitor_feature_routes', () => {
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(exhibitor.add);
       exhibitorId = response.body.data.id;
-      exhibitor.addResponse.data.interests = interest;
+      exhibitor.addResponse.data.interests.push(generatedInterest[0]);
       const expected = JSON.stringify(exhibitor.addResponse);
 
       expect(response.status).toBe(201);
@@ -88,7 +90,7 @@ describe('test_exhibitor_feature_routes', () => {
 
     it('should return the correct value of the first exhibitor', async () => {
       const response = await request(app).get('/exhibitors');
-      exhibitor.firstArrayKey.interests = interest;
+      exhibitor.firstArrayKey.interests.push(generatedInterest[0]);
       const expected = JSON.stringify(exhibitor.firstArrayKey);
 
       expect(response.status).toBe(200);
@@ -103,7 +105,7 @@ describe('test_exhibitor_feature_routes', () => {
   describe('GET /exhibitor/:exhibitorId', () => {
     it('should return the correct types of each value', async () => {
       const response = await request(app).get(`/exhibitor/${exhibitorId}`);
-      exhibitor.firstId.data.interests = interest;
+      exhibitor.firstId.data.interests.push(generatedInterest[0]);
       const expected = JSON.stringify(exhibitor.firstId);
 
       expect(response.status).toBe(200);
@@ -139,7 +141,7 @@ describe('test_exhibitor_feature_routes', () => {
         .patch(`/exhibitor/${exhibitorId}`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(exhibitor.update);
-      exhibitor.updateResponse.data.interests = interest;
+      exhibitor.updateResponse.data.interests.push(generatedInterest[0]);
       const expected = JSON.stringify(exhibitor.updateResponse);
 
       expect(response.status).toBe(200);

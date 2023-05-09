@@ -10,10 +10,12 @@ const exhibitorSchema: Schema = new Schema({
   picture: String,
   place: String,
   sectors: Array<String>,
-  interests: {
-    type: Schema.Types.ObjectId,
-    ref: 'Interests',
-  },
+  interests: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Interests',
+    },
+  ],
 });
 
 exhibitorSchema.set('toJSON', {
