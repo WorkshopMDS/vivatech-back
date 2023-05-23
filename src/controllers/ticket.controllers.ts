@@ -151,15 +151,6 @@ export const validateTicket = async (req: IRequest, res: Response): Promise<ApiR
       });
     }
 
-    const returnedData = {
-      id: ticket.user.id,
-      firstname: ticket.user.firstname,
-      lastname: ticket.user.lastname,
-      cv: ticket.user.cv,
-      email: ticket.user.email,
-      role: ticket.user.role,
-    };
-
     const baseData = {
       id: ticket.user.id,
       email: ticket.user.email,
@@ -178,8 +169,8 @@ export const validateTicket = async (req: IRequest, res: Response): Promise<ApiR
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: {
-        accessToken: generateAccessToken(returnedData),
-        refreshToken: generateRefreshToken(returnedData),
+        accessToken: generateAccessToken(baseData),
+        refreshToken: generateRefreshToken(baseData),
         user: base64,
       },
     });
