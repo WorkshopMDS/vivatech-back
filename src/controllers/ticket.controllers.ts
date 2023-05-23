@@ -135,3 +135,57 @@ export const deleteTicket = async (req: Request, res: Response): Promise<ApiResp
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
+<<<<<<< Updated upstream
+=======
+
+export const validateTicket = async (req: IRequest, res: Response): Promise<ApiResponse> => {
+  try {
+    const { ticketNb } = req.query;
+    const { code } = req.body;
+
+    const ticket = await Ticket.findOne({ ticketNb, code }).populate('user');
+    if (!ticket) {
+      return new ApiResponse(res, {
+        name: 'Success',
+        httpStatusCode: HttpStatusCodes.SUCCESS,
+        description: HttpStatusCodesDescriptions.BAD_REQUEST,
+      });
+    }
+
+    const returnedData = {
+      id: ticket.user.id,
+      firstname: ticket.user.firstname,
+      lastname: ticket.user.lastname,
+      cv: ticket.user.cv,
+      email: ticket.user.email,
+      role: ticket.user.role,
+    };
+
+    const baseData = {
+      id: ticket.user.id,
+      email: ticket.user.email,
+      role: ticket.user.role,
+    };
+
+    const otherData = {
+      firstname: ticket.user.firstname,
+      lastname: ticket.user.lastname,
+      cv: ticket.user.cv,
+    };
+    const base64 = Buffer.from(JSON.stringify({ ...baseData, ...otherData })).toString('base64');
+
+    return new ApiResponse(res, {
+      name: 'Success',
+      httpStatusCode: HttpStatusCodes.SUCCESS,
+      description: HttpStatusCodesDescriptions.SUCCESS,
+      data: {
+        accessToken: generateAccessToken(returnedData),
+        refreshToken: generateRefreshToken(returnedData),
+        user: base64,
+      },
+    });
+  } catch (error) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
+  }
+};
+>>>>>>> Stashed changes
