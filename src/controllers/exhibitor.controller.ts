@@ -8,21 +8,21 @@ import { ApiResponse } from '../utils/apiResponse';
 
 export const getExhibitors = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const exhibitors: IExhibitor[] = await Exhibitor.find();
+    const exhibitors: IExhibitor[] = await Exhibitor.find().populate('interests');
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitors,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
 export const getExhibitor = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id);
+    const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id).populate('interests');
 
     if (!exhibitor) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
@@ -34,8 +34,8 @@ export const getExhibitor = async (req: Request, res: Response): Promise<ApiResp
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: exhibitor,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -60,10 +60,10 @@ export const addExhibitor = async (req: Request, res: Response): Promise<ApiResp
       name: 'Success',
       httpStatusCode: HttpStatusCodes.CREATED,
       description: HttpStatusCodesDescriptions.CREATED,
-      data: exhibitor,
+      data: await exhibitor.populate('interests'),
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -89,10 +89,10 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<ApiR
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: exhibitor,
+      data: await exhibitor.populate('interests'),
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
 
@@ -109,7 +109,7 @@ export const deleteExhibitor = async (req: Request, res: Response): Promise<ApiR
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
     });
-  } catch (e) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e);
+  } catch (e: any) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };

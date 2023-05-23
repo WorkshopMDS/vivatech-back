@@ -10,7 +10,12 @@ const exhibitorSchema: Schema = new Schema({
   picture: String,
   place: String,
   sectors: Array<String>,
-  interests: Array<String>,
+  interests: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Interests',
+    },
+  ],
 });
 
 exhibitorSchema.set('toJSON', {
@@ -21,4 +26,4 @@ exhibitorSchema.set('toJSON', {
   },
 });
 
-export default model<IExhibitor>('Exhibitor', exhibitorSchema);
+export default model<IExhibitor>('Exhibitors', exhibitorSchema);
