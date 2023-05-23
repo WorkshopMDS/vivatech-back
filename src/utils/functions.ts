@@ -31,3 +31,12 @@ export const hashPassword = async (password: string) => {
     throw error;
   }
 };
+
+export const generateSlug = (content: string) =>
+  content
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[\s_]+/g, '-')
+    .replace(/[^a-z0-9-]+/g, '')
+    .replace(/^-+|-+$/g, '');

@@ -1,7 +1,7 @@
 import { afterAll } from '@jest/globals';
 import request from 'supertest';
 
-import { generateUser } from './configs/functions';
+import { expectError, generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
 import { Roles } from '../utils/roles';
@@ -67,7 +67,7 @@ describe('test_ticket_feature_routes', () => {
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(malformedTicket);
 
-      expect(response.status).toBe(400);
+      expectError(response, 400);
     });
 
     it('should return 400 if ticket could not be saved', async () => {
@@ -80,10 +80,10 @@ describe('test_ticket_feature_routes', () => {
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(invalidTicket);
 
-      expect(response.status).toBe(400);
+      expectError(response, 400);
     });
 
-    it('should return 400 if validityPeriod is in past', async () => {
+    it('should return 500 if validityPeriod is in past', async () => {
       const invalidTicket = {
         firstname: 'John',
         lastname: 'Doe',
@@ -99,7 +99,7 @@ describe('test_ticket_feature_routes', () => {
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(invalidTicket);
 
-      expect(response.status).toBe(500);
+      expectError(response, 500);
     });
   });
 
@@ -114,16 +114,14 @@ describe('test_ticket_feature_routes', () => {
 
     it('should return unauthorized for non-admin users', async () => {
       const response = await request(app).get('/tickets').set('Authorization', `Bearer ${userAccessToken}`);
-
-      expect(response.status).toBe(403);
-      expect(response.body).not.toHaveProperty('data');
+      expectError(response, 403);
     });
   });
 
   describe('GET /ticket/:ticketId', () => {
     it('should return 403 when user try to get a ticket', async () => {
       const response = await request(app).get(`/ticket/${ticketId}`).set('Authorization', `Bearer ${userAccessToken}`);
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
 
     it('should get ticket as admin', async () => {
@@ -131,9 +129,9 @@ describe('test_ticket_feature_routes', () => {
       expect(response.status).toBe(200);
     });
 
-    it('should return 400 if ticket is not found', async () => {
+    it('should return 404 if ticket is not found', async () => {
       const response = await request(app).get('/ticket/unknown').set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(response.status).toBe(404);
+      expectError(response, 404);
     });
   });
 
@@ -149,12 +147,12 @@ describe('test_ticket_feature_routes', () => {
       const response = await request(app)
         .delete(`/ticket/${ticketId}`)
         .set('Authorization', `Bearer ${userAccessToken}`);
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
 
     it('should return 404 if ticket is not found', async () => {
       const response = await request(app).delete('/ticket/unknown').set('Authorization', `Bearer ${adminAccessToken}`);
-      expect(response.status).toBe(404);
+      expectError(response, 404);
     });
   });
 });

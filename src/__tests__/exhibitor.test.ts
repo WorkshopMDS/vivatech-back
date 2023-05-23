@@ -2,7 +2,7 @@ import { afterAll } from '@jest/globals';
 import _ from 'lodash';
 import request from 'supertest';
 
-import { generateInterest, generateUser, omitTimestamp } from './configs/functions';
+import { expectError, generateInterest, generateUser, omitTimestamp } from './configs/functions';
 import * as db from './configs/setup';
 import { error } from './mockups/error.mock';
 import { exhibitor } from './mockups/exhibitor.mock';
@@ -119,18 +119,12 @@ describe('test_exhibitor_feature_routes', () => {
 
     it('should return an object of the error 404 if the exhibitor has not been found.', async () => {
       const response = await request(app).get('/exhibitor/644e7dd0ddf96d369a6dd9c9');
-      const expected = JSON.stringify(error[404]);
-
-      expect(typeof response.body).toBe('object');
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 404);
     });
 
     it("should return an object of the error 500 if the exhibitor's id is greater or less than 24 characters.", async () => {
       const response = await request(app).get('/exhibitor/644e7dd0ddf96d366a6dd8c20');
-      const expected = JSON.stringify(error[500]);
-
-      expect(typeof response.body).toBe('object');
-      expect(JSON.stringify(_.omit(response.body, ['timestamp', 'data']))).toBe(expected);
+      expectError(response, 500);
     });
   });
 
@@ -158,17 +152,12 @@ describe('test_exhibitor_feature_routes', () => {
         .patch(`/exhibitor/${exhibitorId}`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(exhibitor.invalidUpdate);
-      const expected = JSON.stringify(error[400]);
-
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 400);
     });
 
     it('should return an object of the error 401 for non-authenticated user', async () => {
       const response = await request(app).patch(`/exhibitor/${exhibitorId}`).send(exhibitor.update);
-      const expected = JSON.stringify(error[401]);
-
-      expect(response.status).toBe(401);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 401);
     });
 
     it('should return an object of the error 403 for non-admin user', async () => {
@@ -176,10 +165,7 @@ describe('test_exhibitor_feature_routes', () => {
         .patch(`/exhibitor/${exhibitorId}`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send(exhibitor.update);
-      const expected = JSON.stringify(error[403]);
-
-      expect(response.status).toBe(403);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 403);
     });
 
     it('should return an object of the error 404 if exhibitor has not been found.', async () => {
@@ -187,9 +173,7 @@ describe('test_exhibitor_feature_routes', () => {
         .patch(`/exhibitor/123456789098123456789098`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(exhibitor.update);
-      const expected = JSON.stringify(error[404]);
-
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 404);
     });
 
     it('should return an object of the error 500 if the id is not correct.', async () => {
@@ -197,9 +181,7 @@ describe('test_exhibitor_feature_routes', () => {
         .patch(`/exhibitor/12345678909812345678909`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send(exhibitor.update);
-      const expected = JSON.stringify(error[500]);
-
-      expect(JSON.stringify(_.omit(response.body, ['timestamp', 'data']))).toBe(expected);
+      expectError(response, 500);
     });
   });
 
@@ -217,38 +199,28 @@ describe('test_exhibitor_feature_routes', () => {
 
     it('should return an object of the error 401 for non-authenticated user', async () => {
       const response = await request(app).delete(`/exhibitor/${exhibitorId}`);
-      const expected = JSON.stringify(error[401]);
-
-      expect(response.status).toBe(401);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 401);
     });
 
     it('should return an object of the error 403 for non-admin user', async () => {
       const response = await request(app)
         .delete(`/exhibitor/${exhibitorId}`)
         .set('Authorization', `Bearer ${userAccessToken}`);
-      const expected = JSON.stringify(error[403]);
-
-      expect(response.status).toBe(403);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 403);
     });
 
     it('should return an object of the error 404 if exhibitor has not been found.', async () => {
       const response = await request(app)
         .delete(`/exhibitor/123456789098123456789098`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      const expected = JSON.stringify(error[404]);
-
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 404);
     });
 
     it('should return an object of the error 500 if the id is not correct.', async () => {
       const response = await request(app)
         .delete(`/exhibitor/12345678909812345678909`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
-      const expected = JSON.stringify(error[500]);
-
-      expect(JSON.stringify(_.omit(response.body, ['timestamp', 'data']))).toBe(expected);
+      expectError(response, 500);
     });
   });
 });

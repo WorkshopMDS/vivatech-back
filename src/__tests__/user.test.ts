@@ -1,10 +1,8 @@
 import { afterAll } from '@jest/globals';
-import _ from 'lodash';
 import request from 'supertest';
 
-import { generateUser, omitTimestamp } from './configs/functions';
+import { expectError, generateUser } from './configs/functions';
 import * as db from './configs/setup';
-import { error } from './mockups/error.mock';
 import app from '../app';
 import { generateRefreshToken } from '../controllers/user.controller';
 import type { IUser, IUserDocument } from '../types/user.type';
@@ -47,20 +45,14 @@ describe('test_user_feature_routes', () => {
         firstname: 'Jane',
         lastname: 'Doe',
       });
-      const expected = JSON.stringify(error[400]);
-
-      expect(response.status).toBe(400);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 400);
     });
 
     it('should return an error if email is already exist in database', async () => {
       const response = await request(app).post('/register').send({
         email: 'jane.doe@example.com',
       });
-      const expected = JSON.stringify(error[400]);
-
-      expect(response.status).toBe(400);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 400);
     });
   });
 
@@ -76,20 +68,14 @@ describe('test_user_feature_routes', () => {
 
     it('should return an 401 if no access token is provided', async () => {
       const response = await request(app).get('/user');
-      const expected = JSON.stringify(error[401]);
-
-      expect(response.status).toBe(401);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 401);
     });
 
     it('should return an 403 if user try to get other user', async () => {
       const response = await request(app)
         .get(`/user/${adminUser.id}`)
         .set('Authorization', `Bearer ${userAccessToken}`);
-      const expected = JSON.stringify(error[403]);
-
-      expect(response.status).toBe(403);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 403);
     });
   });
 
@@ -111,10 +97,7 @@ describe('test_user_feature_routes', () => {
       const response = await request(app).post('/login').send({
         email: 'jane.doe@example.com',
       });
-      const expected = JSON.stringify(error[400]);
-
-      expect(response.status).toBe(400);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 400);
     });
 
     it('should return an error if user does not exist', async () => {
@@ -122,10 +105,7 @@ describe('test_user_feature_routes', () => {
         email: 'nonexistent.user@example.com',
         password: 'password',
       });
-      const expected = JSON.stringify(error[400]);
-
-      expect(response.status).toBe(400);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 400);
     });
 
     it('should return an error if password is incorrect', async () => {
@@ -133,10 +113,7 @@ describe('test_user_feature_routes', () => {
         email: 'jane.doe@example.com',
         password: 'wrongpassword',
       });
-      const expected = JSON.stringify(error[400]);
-
-      expect(response.status).toBe(400);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 400);
     });
   });
 
@@ -151,17 +128,12 @@ describe('test_user_feature_routes', () => {
 
     it('should return an 401 if no access token is provided', async () => {
       const response = await request(app).get('/user').send();
-
-      expect(response.status).toBe(401);
-      expect(response.body).not.toHaveProperty('data');
+      expectError(response, 401);
     });
 
     it('should return an 403 if is non-admin user try to get all users', async () => {
       const response = await request(app).get('/users').set('Authorization', `Bearer ${userAccessToken}`);
-      const expected = JSON.stringify(error[403]);
-
-      expect(response.status).toBe(403);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 403);
     });
   });
 
@@ -175,19 +147,13 @@ describe('test_user_feature_routes', () => {
 
     it('should return 401 if no token is provided', async () => {
       const response = await request(app).post('/refreshToken');
-      const expected = JSON.stringify(error[401]);
-
-      expect(response.status).toBe(401);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 401);
     });
 
     it('should return 404 if refresh have unknown user data', async () => {
       const falseRefreshToken = generateRefreshToken({ id: 'wrongId', email: 'not-exit', role: 0 });
       const response = await request(app).post('/refreshToken').set('Authorization', `Bearer ${falseRefreshToken}`);
-      const expected = JSON.stringify(error[404]);
-
-      expect(response.status).toBe(404);
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 404);
     });
 
     it('should return 500 if refresh token is wrong format', async () => {
@@ -197,11 +163,7 @@ describe('test_user_feature_routes', () => {
           'Authorization',
           `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
         );
-      const expected = JSON.stringify(error[500]);
-
-      expect(response.status).toBe(500);
-      _.unset(response.body, 'data');
-      expect(JSON.stringify(omitTimestamp(response.body))).toBe(expected);
+      expectError(response, 500);
     });
   });
 
@@ -229,7 +191,7 @@ describe('test_user_feature_routes', () => {
         .patch(`/user/${adminUser.id}`)
         .set('Authorization', `Bearer ${userAccessToken}`);
 
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
 
     it('should let admin update other accounts', async () => {
@@ -256,7 +218,7 @@ describe('test_user_feature_routes', () => {
         .delete(`/user/${adminUser.id}`)
         .set('Authorization', `Bearer ${userAccessToken}`);
 
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
 
     it('should let admin delete other accounts', async () => {

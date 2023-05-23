@@ -135,7 +135,7 @@ export const getUser = async (req: IRequest, res: Response): Promise<ApiResponse
 export const updateUser = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
     const { userId } = req.params;
-    const { firstname, lastname, email, password, role } = req.body;
+    const { firstname, lastname, email, password, role, ...rest } = req.body;
 
     if ((!userId && !req.user?.id) || req.body === null) {
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
@@ -147,6 +147,7 @@ export const updateUser = async (req: IRequest, res: Response): Promise<ApiRespo
       email,
       password,
       ...(req.user?.role === Roles.ADMIN && { role }),
+      ...rest,
     };
 
     const user: IUser | null = await User.findByIdAndUpdate(
@@ -227,9 +228,47 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<A
  * SPEAKERS
  */
 
+export const getSpeaker = async (req: IRequest, res: Response): Promise<ApiResponse> => {
+  try {
+    const { speakerId } = req.params;
+
+    if (!speakerId) {
+      return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
+    }
+
+    const speaker: IUser | null = await User.findById(speakerId).select([
+      'firstname',
+      'lastname',
+      'biography',
+      'picture',
+      'company',
+      'links',
+    ]);
+    if (!speaker) {
+      return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
+    }
+
+    return new ApiResponse(res, {
+      name: 'Success',
+      httpStatusCode: HttpStatusCodes.SUCCESS,
+      description: HttpStatusCodesDescriptions.SUCCESS,
+      data: speaker,
+    });
+  } catch (error) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
+  }
+};
+
 export const getSpeakers = async (_: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const speakers: IUser[] = await User.find({ role: Roles.SPEAKER });
+    const speakers: IUser[] = await User.find({ role: Roles.SPEAKER }).select([
+      'firstname',
+      'lastname',
+      'biography',
+      'picture',
+      'company',
+      'links',
+    ]);
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
@@ -243,7 +282,7 @@ export const getSpeakers = async (_: Request, res: Response): Promise<ApiRespons
 
 export const setUserAsSpeaker = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
-    const { email, firstname, lastname, password } = req.body;
+    const { email, firstname, lastname, company, ...rest } = req.body;
 
     const updateSpeaker: IUser | null = await User.findOneAndUpdate(
       { email },
@@ -255,11 +294,16 @@ export const setUserAsSpeaker = async (req: IRequest, res: Response): Promise<Ap
       { returnDocument: 'after' }
     ).select('-id');
     if (!updateSpeaker) {
+      if (!firstname || !lastname || !company) {
+        return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
+      }
+
       const speaker: IUserDocument = new User({
         firstname,
         lastname,
         email,
-        password,
+        company,
+        ...rest,
         role: Roles.SPEAKER,
       });
       await speaker.save();
