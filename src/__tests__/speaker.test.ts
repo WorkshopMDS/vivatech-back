@@ -1,7 +1,7 @@
 import { afterAll } from '@jest/globals';
 import request from 'supertest';
 
-import { generateUser } from './configs/functions';
+import { expectError, generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
 import type { IUser, IUserDocument } from '../types/user.type';
@@ -42,20 +42,25 @@ describe('test_speaker_feature_routes', () => {
       expect(response.body.data.role).toBe(Roles.SPEAKER);
     });
 
+    it('should return 401 if unauthenticated user try to add a speaker', async () => {
+      const response = await request(app).post('/speaker').send({
+        email: 'speaker@example.com',
+      });
+      expectError(response, 401);
+    });
+
     it('should return 403 if common user try to create a user with speaker role', async () => {
       const response = await request(app).post('/speaker').set('Authorization', `Bearer ${userAccessToken}`).send({
         email: 'speaker@example.com',
       });
-
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
 
     it('should return 403 if common user try to set user role to speaker', async () => {
       const response = await request(app).post('/speaker').set('Authorization', `Bearer ${userAccessToken}`).send({
         email: adminUser.id,
       });
-
-      expect(response.status).toBe(403);
+      expectError(response, 403);
     });
   });
 

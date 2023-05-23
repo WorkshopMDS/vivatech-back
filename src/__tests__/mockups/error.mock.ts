@@ -1,4 +1,6 @@
-export const error = {
+import type { IError } from '../../types/global.type';
+
+export const error: IError = {
   400: {
     name: 'Error',
     httpStatusCode: 400,
