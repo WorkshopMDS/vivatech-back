@@ -1,8 +1,8 @@
 import type { Document, Schema } from 'mongoose';
 
-import type { ILinks } from './global.type';
+import type { ILinks, ITimestamp } from './global.type';
 
-export interface IUser {
+export interface IUser extends ITimestamp {
   id: string;
   email: string;
   password: string;
