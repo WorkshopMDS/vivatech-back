@@ -1,24 +1,33 @@
 import type { Response, Request } from 'express';
+import NodeCache from 'node-cache';
 
+import { FOURDAYSTOSECONDS, SUCCESS } from '../environments/constants.environment';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Cv from '../models/cv.model';
 import type { ICV } from '../types/cv.type';
 import { ApiResponse } from '../utils/apiResponse';
 
-const success = {
-  name: 'Success',
-  httpStatusCode: HttpStatusCodes.SUCCESS,
-  description: HttpStatusCodesDescriptions.SUCCESS,
-  data: {},
-};
+const cache = new NodeCache({ stdTTL: FOURDAYSTOSECONDS });
 
 export const getCVs = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const cvs: ICV[] = await Cv.find();
+    const cachedCVsFetched: ICV | undefined = cache.get('CVs');
 
-    success.data = cvs;
-    return new ApiResponse(res, success);
+    if (cachedCVsFetched) {
+      SUCCESS.data = cachedCVsFetched;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    const cvs: ICV[] = await Cv.find();
+    const cachedCVs: boolean = cache.set('CVs', cvs);
+
+    if (cachedCVs) {
+      SUCCESS.data = cvs;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, 'Can not cache data.');
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
@@ -26,13 +35,31 @@ export const getCVs = async (_req: Request, res: Response): Promise<ApiResponse>
 
 export const getCV = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
+    const { id } = req.params;
+
+    if (!id) {
+      return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
+    }
+
+    const cachedCVFetched: ICV | undefined = cache.get(`CV_${id}`);
+
+    if (cachedCVFetched) {
+      SUCCESS.data = cachedCVFetched;
+      return new ApiResponse(res, SUCCESS);
+    }
+
     const cv: ICV | null = await Cv.findById(req.params.id);
     if (!cv) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    success.data = cv;
-    return new ApiResponse(res, success);
+    const cachedCV: boolean = cache.set(`CV_${id}`, cv);
+    if (cachedCV) {
+      SUCCESS.data = cv;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, 'Can not cache data.');
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
@@ -76,8 +103,8 @@ export const updateCV = async (req: Request, res: Response): Promise<ApiResponse
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    success.data = cv;
-    return new ApiResponse(res, success);
+    SUCCESS.data = cv;
+    return new ApiResponse(res, SUCCESS);
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }

@@ -135,23 +135,3 @@ export const deleteExhibitor = async (req: Request, res: Response): Promise<ApiR
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
 };
-
-export const cacheClear = async (_req: Request, res: Response): Promise<ApiResponse> => {
-  try {
-    if (cache.has('exhibitors')) {
-      cache.del('exhibitors');
-    }
-
-    if (cache.has('exhibitor')) {
-      cache.del('exhibitor');
-    }
-
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-    });
-  } catch (e: any) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
-  }
-};

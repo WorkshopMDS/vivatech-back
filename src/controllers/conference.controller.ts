@@ -153,23 +153,3 @@ export const deleteConference = async (req: Request, res: Response): Promise<Api
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
-
-export const cacheClear = async (_req: Request, res: Response): Promise<ApiResponse> => {
-  try {
-    if (cache.has('conferences')) {
-      cache.del('conferences');
-    }
-
-    if (cache.has('conference')) {
-      cache.del('conference');
-    }
-
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-    });
-  } catch (e: any) {
-    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
-  }
-};
