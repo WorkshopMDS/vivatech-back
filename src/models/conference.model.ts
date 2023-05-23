@@ -33,7 +33,7 @@ const conferenceSchema: Schema = new Schema(
     },
     updatedBy: [
       {
-        time: {
+        date: {
           type: Date,
           default: new Date(),
           editable: false,
