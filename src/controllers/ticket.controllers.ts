@@ -151,22 +151,27 @@ export const validateTicket = async (req: IRequest, res: Response): Promise<ApiR
       });
     }
 
-    const returnedData = {
+    const baseData = {
       id: ticket.user.id,
-      firstname: ticket.user.firstname,
-      lastname: ticket.user.lastname,
-      cv: ticket.user.cv,
       email: ticket.user.email,
       role: ticket.user.role,
     };
+
+    const otherData = {
+      firstname: ticket.user.firstname,
+      lastname: ticket.user.lastname,
+      cv: ticket.user.cv,
+    };
+    const base64 = Buffer.from(JSON.stringify({ ...baseData, ...otherData })).toString('base64');
 
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: {
-        accessToken: generateAccessToken(returnedData),
-        refreshToken: generateRefreshToken(returnedData),
+        accessToken: generateAccessToken(baseData),
+        refreshToken: generateRefreshToken(baseData),
+        user: base64,
       },
     });
   } catch (error) {
