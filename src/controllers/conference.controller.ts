@@ -2,23 +2,23 @@ import type { Response, Request } from 'express';
 
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
-import Talk from '../models/talk.model';
+import Conference from '../models/conference.model';
+import type { IConference } from '../types/conference.type';
 import type { IRequest } from '../types/global.type';
-import type { ITalk } from '../types/talk.type';
 import { ApiResponse } from '../utils/apiResponse';
 
-export const getTalk = async (req: Request, res: Response): Promise<ApiResponse> => {
+export const getConference = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const { talkId } = req.params;
+    const { conferenceId } = req.params;
 
-    if (!talkId) {
+    if (!conferenceId) {
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const talk: ITalk | null = await Talk.findById(talkId)
+    const conference: IConference | null = await Conference.findById(conferenceId)
       .select(['-_id'])
       .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
-    if (!talk) {
+    if (!conference) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
@@ -26,16 +26,16 @@ export const getTalk = async (req: Request, res: Response): Promise<ApiResponse>
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: talk,
+      data: conference,
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
 
-export const getTalks = async (_: Request, res: Response): Promise<ApiResponse> => {
+export const getConferences = async (_: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const talks: ITalk[] = await Talk.find()
+    const conferences: IConference[] = await Conference.find()
       .select(['-_id'])
       .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
 
@@ -43,14 +43,14 @@ export const getTalks = async (_: Request, res: Response): Promise<ApiResponse> 
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: talks,
+      data: conferences,
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
 
-export const addTalk = async (req: IRequest, res: Response): Promise<ApiResponse> => {
+export const addConference = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
     const { title, speaker, ...rest } = req.body;
 
@@ -58,29 +58,29 @@ export const addTalk = async (req: IRequest, res: Response): Promise<ApiResponse
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const talk: ITalk = new Talk({
+    const conference: IConference = new Conference({
       createdBy: req.user?.id,
       title,
       ...rest,
     });
-    await talk.save();
+    await conference.save();
 
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.CREATED,
       description: HttpStatusCodesDescriptions.CREATED,
-      data: talk,
+      data: conference,
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
 
-export const updateTalk = async (req: IRequest, res: Response): Promise<ApiResponse> => {
+export const updateConference = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
-    const { talkId } = req.params;
+    const { conferenceId } = req.params;
 
-    if (!talkId) {
+    if (!conferenceId) {
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
@@ -95,10 +95,10 @@ export const updateTalk = async (req: IRequest, res: Response): Promise<ApiRespo
       },
     };
 
-    const talk: ITalk | null = await Talk.findByIdAndUpdate(talkId, updateActions, { returnDocument: 'after' }).select([
-      '-_id',
-    ]);
-    if (!talk) {
+    const conference: IConference | null = await Conference.findByIdAndUpdate(conferenceId, updateActions, {
+      returnDocument: 'after',
+    }).select(['-_id']);
+    if (!conference) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
@@ -106,23 +106,23 @@ export const updateTalk = async (req: IRequest, res: Response): Promise<ApiRespo
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: talk,
+      data: conference,
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
 
-export const deleteTalk = async (req: Request, res: Response): Promise<ApiResponse> => {
+export const deleteConference = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const { talkId } = req.params;
+    const { conferenceId } = req.params;
 
-    if (!talkId) {
+    if (!conferenceId) {
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const talk = await Talk.findByIdAndDelete(talkId).select(['-_id']);
-    if (!talk) {
+    const conference: IConference | null = await Conference.findByIdAndDelete(conferenceId).select(['-_id']);
+    if (!conference) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
@@ -130,7 +130,7 @@ export const deleteTalk = async (req: Request, res: Response): Promise<ApiRespon
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: talk,
+      data: conference,
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);

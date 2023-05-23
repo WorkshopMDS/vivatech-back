@@ -1,9 +1,9 @@
 import { model, Schema } from 'mongoose';
 
-import type { ITalk } from '../types/talk.type';
+import type { IConference } from '../types/conference.type';
 import { generateSlug } from '../utils/functions';
 
-const talkSchema: Schema = new Schema(
+const conferenceSchema: Schema = new Schema(
   {
     title: {
       type: String,
@@ -53,12 +53,12 @@ const talkSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-talkSchema.pre('save', async function (this, next) {
+conferenceSchema.pre('save', async function (this, next) {
   this.slug = generateSlug(this.title);
   next();
 });
 
-talkSchema.pre('findOneAndUpdate', async function (this, next) {
+conferenceSchema.pre('findOneAndUpdate', async function (this, next) {
   const update: any = { ...this.getUpdate() };
   if (!update.$set.title) return next();
 
@@ -71,7 +71,7 @@ talkSchema.pre('findOneAndUpdate', async function (this, next) {
   return next();
 });
 
-talkSchema.set('toJSON', {
+conferenceSchema.set('toJSON', {
   transform(doc, ret) {
     ret.id = ret._id;
     delete ret._id;
@@ -79,4 +79,4 @@ talkSchema.set('toJSON', {
   },
 });
 
-export default model<ITalk>('Talks', talkSchema);
+export default model<IConference>('Conferences', conferenceSchema);

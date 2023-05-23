@@ -2,7 +2,7 @@ import type { Document } from 'mongoose';
 
 import type { IUser } from './user.type';
 
-export interface ITalk extends Document {
+export interface IConference extends Document {
   title: string;
   slug: string;
   description?: string;

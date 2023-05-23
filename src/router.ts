@@ -9,6 +9,7 @@ router.use('/', routes.ticketRoutes);
 router.use('/', routes.exhibitorRoutes);
 router.use('/', routes.talkRoutes);
 router.use('/', routes.interestRoutes);
+router.use('/', routes.conferenceRoutes);
 router.use(routes.defaultRoutes);
 
 export default router;

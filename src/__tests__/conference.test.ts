@@ -5,17 +5,17 @@ import { UNKNOWN_ID } from './configs/constants';
 import { expectError, generateUser } from './configs/functions';
 import * as db from './configs/setup';
 import app from '../app';
-import type { ITalk } from '../types/talk.type';
+import type { IConference } from '../types/conference.type';
 import type { IUser, IUserDocument } from '../types/user.type';
 import { Roles } from '../utils/roles';
 
-describe('test_talk_feature_routes', () => {
+describe('test_conference_feature_routes', () => {
   let user: IUser;
   let userAccessToken: string;
   let adminUser: IUserDocument;
   let adminAccessToken: string;
 
-  let talk: ITalk;
+  let conference: IConference;
 
   beforeAll(async () => {
     await db.connect();
@@ -27,25 +27,25 @@ describe('test_talk_feature_routes', () => {
     await db.closeDatabase();
   });
 
-  describe('POST /talk', () => {
-    it('should create a new talk', async () => {
+  describe('POST /conference', () => {
+    it('should create a new conference', async () => {
       const response = await request(app)
-        .post('/talk')
+        .post('/conference')
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({
-          title: 'Beautifull talk',
+          title: 'Beautifull conference',
           speaker: user.id,
           startDate: new Date(new Date().setDate(new Date().getDate() + 1)), // tomorrow
           endDate: new Date(new Date().setDate(new Date().getDate() + 7)), // Next week
         });
-      talk = response.body.data;
+      conference = response.body.data;
 
       expect(response.status).toBe(201);
       expect(response.body.data.createdBy).toBe(adminUser.id);
     });
 
     it('should return a 400 if required data is not set', async () => {
-      const response = await request(app).post(`/talk`).set('Authorization', `Bearer ${adminAccessToken}`).send({
+      const response = await request(app).post(`/conference`).set('Authorization', `Bearer ${adminAccessToken}`).send({
         unknown: 'unknown',
         // Missing title
       });
@@ -53,54 +53,54 @@ describe('test_talk_feature_routes', () => {
     });
 
     it('should return a 401 if user is not connected', async () => {
-      const response = await request(app).post('/talk');
+      const response = await request(app).post('/conference');
       expectError(response, 401);
     });
 
-    it('should return a 403 if user try to add a talk', async () => {
-      const response = await request(app).post('/talk').set('Authorization', `Bearer ${userAccessToken}`);
+    it('should return a 403 if user try to add a conference', async () => {
+      const response = await request(app).post('/conference').set('Authorization', `Bearer ${userAccessToken}`);
       expectError(response, 403);
     });
   });
 
-  describe('GET /talks', () => {
-    it('should return all talks', async () => {
-      const response = await request(app).get('/talks');
+  describe('GET /conferences', () => {
+    it('should return all conferences', async () => {
+      const response = await request(app).get('/conferences');
 
       expect(response.status).toBe(200);
       expect(response.body.data).toHaveLength(1);
     });
   });
 
-  describe('GET /talk/:talkId', () => {
-    it('should return a specific talk', async () => {
-      const response = await request(app).get(`/talk/${talk.id}`);
+  describe('GET /conference/:conferenceId', () => {
+    it('should return a specific conference', async () => {
+      const response = await request(app).get(`/conference/${conference.id}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.data.title).toBe(talk.title);
+      expect(response.body.data.title).toBe(conference.title);
     });
 
     it('should return a 404 error if no id provided', async () => {
-      const response = await request(app).get(`/talk`);
+      const response = await request(app).get(`/conference`);
       expectError(response, 404);
     });
 
-    it('should return a 404 if talk does not exist', async () => {
-      const response = await request(app).get(`/talk/${UNKNOWN_ID}`);
+    it('should return a 404 if conference does not exist', async () => {
+      const response = await request(app).get(`/conference/${UNKNOWN_ID}`);
       expectError(response, 404);
     });
 
     it('should return a 500 error if id is incorrect', async () => {
-      const response = await request(app).get(`/talk/ddd`);
+      const response = await request(app).get(`/conference/ddd`);
       expectError(response, 500);
     });
   });
 
-  describe('PATCH /talk/:talkId', () => {
-    it('should edit a talk as admin', async () => {
-      const newTitle = 'New talk title';
+  describe('PATCH /conference/:conferenceId', () => {
+    it('should edit a conference as admin', async () => {
+      const newTitle = 'New conference title';
       const response = await request(app)
-        .patch(`/talk/${talk.id}`)
+        .patch(`/conference/${conference.id}`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({
           title: newTitle,
@@ -110,63 +110,69 @@ describe('test_talk_feature_routes', () => {
       expect(response.body.data.title).toBe(newTitle);
     });
 
-    it('should return a 403 if user trying to edit a talk', async () => {
+    it('should return a 403 if user trying to edit a conference', async () => {
       const response = await request(app)
-        .patch(`/talk/${talk.id}`)
+        .patch(`/conference/${conference.id}`)
         .set('Authorization', `Bearer ${userAccessToken}`)
         .send({
-          title: 'Other talk title',
+          title: 'Other conference title',
         });
 
       expectError(response, 403);
     });
 
-    it('should return a 404 if talk does not exist', async () => {
+    it('should return a 404 if conference does not exist', async () => {
       const response = await request(app)
-        .patch(`/talk/${UNKNOWN_ID}`)
+        .patch(`/conference/${UNKNOWN_ID}`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({
-          title: 'Other talk title',
+          title: 'Other conference title',
         });
       expectError(response, 404);
     });
 
     it('should return a 500 if id is unknown', async () => {
       const response = await request(app)
-        .patch(`/talk/unknown`)
+        .patch(`/conference/unknown`)
         .set('Authorization', `Bearer ${adminAccessToken}`)
         .send({
-          title: 'Other talk title',
+          title: 'Other conference title',
         });
       expectError(response, 500);
     });
   });
 
-  describe('DELETE /talk/:talkId', () => {
-    it('should delete a specific talk if user is admin', async () => {
-      const response = await request(app).delete(`/talk/${talk.id}`).set('Authorization', `Bearer ${adminAccessToken}`);
+  describe('DELETE /conference/:conferenceId', () => {
+    it('should delete a specific conference if user is admin', async () => {
+      const response = await request(app)
+        .delete(`/conference/${conference.id}`)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expect(response.status).toBe(200);
     });
 
     it('should return a 401 if not accessToken provided', async () => {
-      const response = await request(app).delete(`/talk/${talk.id}`);
+      const response = await request(app).delete(`/conference/${conference.id}`);
       expectError(response, 401);
     });
 
-    it('should return a 403 if non-admin user trying to delete a talk', async () => {
-      const response = await request(app).delete(`/talk/${talk.id}`).set('Authorization', `Bearer ${userAccessToken}`);
+    it('should return a 403 if non-admin user trying to delete a conference', async () => {
+      const response = await request(app)
+        .delete(`/conference/${conference.id}`)
+        .set('Authorization', `Bearer ${userAccessToken}`);
       expectError(response, 403);
     });
 
-    it('should return a 404 if talk does not exist', async () => {
+    it('should return a 404 if conference does not exist', async () => {
       const response = await request(app)
-        .delete(`/talk/${UNKNOWN_ID}`)
+        .delete(`/conference/${UNKNOWN_ID}`)
         .set('Authorization', `Bearer ${adminAccessToken}`);
       expectError(response, 404);
     });
 
     it('should return a 500 if id is unknown', async () => {
-      const response = await request(app).delete(`/talk/unknown`).set('Authorization', `Bearer ${adminAccessToken}`);
+      const response = await request(app)
+        .delete(`/conference/unknown`)
+        .set('Authorization', `Bearer ${adminAccessToken}`);
       expectError(response, 500);
     });
   });
