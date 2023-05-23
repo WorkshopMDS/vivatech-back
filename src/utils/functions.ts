@@ -12,6 +12,8 @@ export const makeTicketNumber = (length: number) => {
   return result;
 };
 
+export const getRandomInt = (length = 6) => Math.floor(10 ** (length - 1) + Math.random() * 9 * 10 ** (length - 1));
+
 export const generateComplexPassword = () =>
   Math.random().toString(36).slice(-10) +
   Math.random().toString(36).toUpperCase().slice(-2) +
