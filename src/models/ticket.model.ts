@@ -28,6 +28,10 @@ const ticketSchema: Schema = new Schema(
       ],
       required: true,
     },
+    code: {
+      type: Number,
+      length: 6,
+    },
   },
   {
     timestamps: {
