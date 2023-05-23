@@ -1,4 +1,4 @@
-import type { Document } from 'mongoose';
+import type { Document, Schema } from 'mongoose';
 
 import type { ILinks } from './global.type';
 
@@ -19,8 +19,16 @@ export interface IUser {
   accessToken?: string;
   refreshToken?: string;
   isSpeaker?: boolean;
-  cv?: string;
-  cvScanned?: string[];
+  cv?: {
+    type: Schema.Types.ObjectId;
+    ref: 'CV';
+  };
+  cvScanned?: [
+    {
+      type: Schema.Types.ObjectId;
+      ref: 'CV';
+    }
+  ];
 }
 
 export interface IUserDocument extends IUser, Omit<Document, 'id'> {
