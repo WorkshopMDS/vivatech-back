@@ -1,11 +1,15 @@
 import type { Response, Request } from 'express';
+import NodeCache from 'node-cache';
 
+import { FOURDAYSTOSECONDS, SUCCESS } from '../environments/constants.environment';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Conference from '../models/conference.model';
 import type { IConference } from '../types/conference.type';
 import type { IRequest } from '../types/global.type';
 import { ApiResponse } from '../utils/apiResponse';
+
+const cache = new NodeCache({ stdTTL: FOURDAYSTOSECONDS });
 
 export const getConference = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
@@ -15,6 +19,13 @@ export const getConference = async (req: Request, res: Response): Promise<ApiRes
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
+    const cachedConferenceFetched: IConference | undefined = cache.get(`conference_${conferenceId}`);
+
+    if (cachedConferenceFetched) {
+      SUCCESS.data = cachedConferenceFetched;
+      return new ApiResponse(res, SUCCESS);
+    }
+
     const conference: IConference | null = await Conference.findById(conferenceId)
       .select(['-_id'])
       .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
@@ -22,12 +33,14 @@ export const getConference = async (req: Request, res: Response): Promise<ApiRes
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-      data: conference,
-    });
+    const cachedConference: boolean = cache.set(`conference_${conferenceId}`, conference);
+
+    if (cachedConference) {
+      SUCCESS.data = conference;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, 'Can not cache data.');
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
@@ -35,16 +48,24 @@ export const getConference = async (req: Request, res: Response): Promise<ApiRes
 
 export const getConferences = async (_: Request, res: Response): Promise<ApiResponse> => {
   try {
+    const cachedConferencesFetched: IConference[] | undefined = cache.get('conferences');
+
+    if (cachedConferencesFetched) {
+      SUCCESS.data = cachedConferencesFetched;
+      return new ApiResponse(res, SUCCESS);
+    }
+
     const conferences: IConference[] = await Conference.find()
       .select(['-_id'])
       .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
+    const cachedConferences: boolean = cache.set('conferences', conferences);
 
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-      data: conferences,
-    });
+    if (cachedConferences) {
+      SUCCESS.data = conferences;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, 'Can not cache data.');
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
@@ -102,12 +123,8 @@ export const updateConference = async (req: IRequest, res: Response): Promise<Ap
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-      data: conference,
-    });
+    SUCCESS.data = conference;
+    return new ApiResponse(res, SUCCESS);
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
