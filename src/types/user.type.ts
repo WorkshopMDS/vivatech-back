@@ -19,10 +19,12 @@ export interface IUser {
   accessToken?: string;
   refreshToken?: string;
   isSpeaker?: boolean;
+  cv?: string;
+  cvScanned?: string[];
 }
 
 export interface IUserDocument extends IUser, Omit<Document, 'id'> {
   isPasswordValid: (password: string) => Promise<boolean>;
 }
 
-export interface IUserData extends Pick<IUser, 'id' | 'email' | 'role'> {}
+export interface IUserData extends Pick<IUser, 'id' | 'email' | 'role' | 'firstname' | 'lastname' | 'cv'> {}

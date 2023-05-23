@@ -48,6 +48,8 @@ const userSchema: Schema = new Schema(
         url: String,
       },
     ],
+    cv: String,
+    cvScanned: [String],
   },
   { timestamps: true }
 );

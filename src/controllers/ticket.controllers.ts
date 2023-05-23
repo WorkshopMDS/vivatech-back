@@ -1,5 +1,6 @@
 import type { Response, Request } from 'express';
 
+import { generateAccessToken } from './user.controller';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Ticket from '../models/ticket.model';
@@ -53,7 +54,7 @@ export const checkTicket = async (req: Request, res: Response): Promise<ApiRespo
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const ticket: ITicket | null = await Ticket.findOne({ ticketId }).select(['-__v', '-_id']);
+    const ticket: ITicket | null = await Ticket.findOne({ ticketId }).select(['-__v', '-_id']).populate('user');
     if (!ticket) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
@@ -62,6 +63,16 @@ export const checkTicket = async (req: Request, res: Response): Promise<ApiRespo
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
+      data: {
+        user: generateAccessToken({
+          id: ticket.user.id,
+          firstname: ticket.user.firstname,
+          lastname: ticket.user.lastname,
+          email: ticket.user.email,
+          role: ticket.user.role,
+          cv: ticket.user.cv,
+        }),
+      },
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
