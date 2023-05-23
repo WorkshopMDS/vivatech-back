@@ -1,6 +1,5 @@
 import type { Response, Request } from 'express';
 
-import { generateAccessToken } from './user.controller';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Ticket from '../models/ticket.model';
@@ -59,19 +58,23 @@ export const checkTicket = async (req: Request, res: Response): Promise<ApiRespo
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
+    const ticketBase64 = Buffer.from(
+      JSON.stringify({
+        id: ticket.user.id,
+        firstname: ticket.user.firstname,
+        lastname: ticket.user.lastname,
+        email: ticket.user.email,
+        role: ticket.user.role,
+        cv: ticket.user.cv,
+      })
+    ).toString('base64');
+
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
       data: {
-        user: generateAccessToken({
-          id: ticket.user.id,
-          firstname: ticket.user.firstname,
-          lastname: ticket.user.lastname,
-          email: ticket.user.email,
-          role: ticket.user.role,
-          cv: ticket.user.cv,
-        }),
+        user: ticketBase64,
       },
     });
   } catch (error) {

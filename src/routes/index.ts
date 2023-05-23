@@ -1,4 +1,5 @@
 import { conferenceRoutes } from './conference.route';
+import { cvRoutes } from './cv.route';
 import { defaultRoutes } from './default.route';
 import { exhibitorRoutes } from './exhibitor.route';
 import { interestRoutes } from './interest.route';
@@ -14,4 +15,5 @@ export default {
   defaultRoutes,
   conferenceRoutes,
   talkRoutes,
+  cvRoutes,
 };
