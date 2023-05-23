@@ -1,20 +1,32 @@
 import type { Response, Request } from 'express';
+import NodeCache from 'node-cache';
 
+import { FOURDAYSTOSECONDS, SUCCESS } from '../environments/constants.environment';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Exhibitor from '../models/exhibitor.model';
 import type { IExhibitor } from '../types/exhibitor.type';
 import { ApiResponse } from '../utils/apiResponse';
 
+const cache = new NodeCache({ stdTTL: FOURDAYSTOSECONDS });
+
 export const getExhibitors = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {
+    const cachedExhibitorsFetched: IExhibitor[] | undefined = cache.get('exhibitors');
+
+    if (cachedExhibitorsFetched) {
+      SUCCESS.data = cachedExhibitorsFetched;
+      return new ApiResponse(res, SUCCESS);
+    }
+
     const exhibitors: IExhibitor[] = await Exhibitor.find().populate('interests');
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-      data: exhibitors,
-    });
+    const cachedExhibitors: boolean = cache.set('exhibitors', exhibitors);
+    if (cachedExhibitors) {
+      SUCCESS.data = exhibitors;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, 'Can not cache data.');
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
@@ -22,18 +34,32 @@ export const getExhibitors = async (_req: Request, res: Response): Promise<ApiRe
 
 export const getExhibitor = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
+    const { id } = req.params;
+
+    if (!id) {
+      return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
+    }
+
+    const cachedExhibitorFetched: IExhibitor[] | undefined = cache.get(`exhibitor_${id}`);
+
+    if (cachedExhibitorFetched) {
+      SUCCESS.data = cachedExhibitorFetched;
+      return new ApiResponse(res, SUCCESS);
+    }
+
     const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id).populate('interests');
 
     if (!exhibitor) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-      data: exhibitor,
-    });
+    const cachedExhibitor: boolean = cache.set(`exhibitor_${id}`, exhibitor);
+    if (cachedExhibitor) {
+      SUCCESS.data = exhibitor;
+      return new ApiResponse(res, SUCCESS);
+    }
+
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, 'Can not cache data.');
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
@@ -85,12 +111,8 @@ export const updateExhibitor = async (req: Request, res: Response): Promise<ApiR
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    return new ApiResponse(res, {
-      name: 'Success',
-      httpStatusCode: HttpStatusCodes.SUCCESS,
-      description: HttpStatusCodesDescriptions.SUCCESS,
-      data: await exhibitor.populate('interests'),
-    });
+    SUCCESS.data = await exhibitor.populate('interests');
+    return new ApiResponse(res, SUCCESS);
   } catch (e: any) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, e.message);
   }
