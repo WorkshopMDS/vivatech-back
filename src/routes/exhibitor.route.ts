@@ -6,6 +6,7 @@ import {
   addExhibitor,
   updateExhibitor,
   deleteExhibitor,
+  cacheClear,
 } from '../controllers/exhibitor.controller';
 import { isAuthenticated } from '../middlewares/auth.middleware';
 import { isInGroup } from '../middlewares/permission.middleware';
@@ -18,3 +19,4 @@ exhibitorRoutes.get('/exhibitor/:id', getExhibitor);
 exhibitorRoutes.post('/exhibitor', isAuthenticated, isInGroup([Roles.ADMIN]), addExhibitor);
 exhibitorRoutes.patch('/exhibitor/:id', isAuthenticated, isInGroup([Roles.ADMIN]), updateExhibitor);
 exhibitorRoutes.delete('/exhibitor/:id', isAuthenticated, isInGroup([Roles.ADMIN]), deleteExhibitor);
+exhibitorRoutes.get('/clear-exhibitor', isAuthenticated, isInGroup([Roles.ADMIN]), cacheClear);
