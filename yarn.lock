@@ -1612,6 +1612,13 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.14.tgz#ab67bb907f1146afc6fedb9ce60ae8a99c989631"
   integrity sha512-+ImzUB3mw2c5ISJUq0punjDilUQ5GnUim0ZRvchHIWJmOC0G+p0kzhXBqj6cDjK0QdPFwzrHWgrJp3RPvCG5qg==
 
+"@types/nodemailer@^6.4.8":
+  version "6.4.8"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.8.tgz#f06c661e9b201fc2acc3a00a0fded42ba7eaca9d"
+  integrity sha512-oVsJSCkqViCn8/pEu2hfjwVO+Gb3e+eTWjg3PcjeFKRItfKpKwHphQqbYmPQrlMk+op7pNNWPbsJIEthpFN/OQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/prettier@^2.1.5":
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.7.2.tgz#6c2324641cc4ba050a8c710b2b251b377581fbf0"
@@ -4725,6 +4732,11 @@ node-releases@^2.0.8:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.11.tgz#59d7cef999d13f908e43b5a70001cf3129542f0f"
   integrity sha512-+M0PwXeU80kRohZ3aT4J/OnR+l9/KD2nVLNNoRgFtnf+umQVFdGBAO2N8+nCnEi0xlh/Wk3zOGC+vNNx+uM79Q==
 
+nodemailer@^6.9.2:
+  version "6.9.2"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.2.tgz#b79051811edd52c2436ad1c6aed2dc45b9c9cf1f"
+  integrity sha512-4+TYaa/e1nIxQfyw/WzNPYTEZ5OvHIDEnmjs4LPmIfccPQN+2CYKmGHjWixn/chzD3bmUTu5FMfpltizMxqzdg==
+
 nodemon@^2.0.22:
   version "2.0.22"
   resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-2.0.22.tgz#182c45c3a78da486f673d6c1702e00728daf5258"
@@ -5995,9 +6007,9 @@ yallist@^4.0.0:
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
 yaml@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.2.2.tgz#ec551ef37326e6d42872dad1970300f8eb83a073"
-  integrity sha512-CBKFWExMn46Foo4cldiChEzn7S7SRV+wqiluAb6xmueD/fGyRHIhX8m14vVGgeFWjN540nKCNVj6P21eQjgTuA==
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.3.0.tgz#47ebe58ee718f772ce65862beb1db816210589a0"
+  integrity sha512-8/1wgzdKc7bc9E6my5wZjmdavHLvO/QOmLG1FBugblEvY4IXrLjlViIOmL24HthU042lWTDRO90Fz1Yp66UnMw==
 
 yargs-parser@^21.0.1, yargs-parser@^21.1.1:
   version "21.1.1"

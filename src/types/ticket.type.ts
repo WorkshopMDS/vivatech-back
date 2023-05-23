@@ -8,4 +8,5 @@ export interface ITicket extends Document {
   validityPeriod: Date[];
   buyDate: Date;
   updatedAt: Date;
+  code?: Number;
 }

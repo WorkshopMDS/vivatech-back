@@ -35,6 +35,7 @@ const userSchema: Schema = new Schema(
     },
     biography: String,
     picture: String,
+    phone: String,
     company: {
       name: String,
       title: String,

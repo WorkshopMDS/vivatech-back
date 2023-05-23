@@ -1,11 +1,14 @@
 import type { Response, Request } from 'express';
 
+import { generateAccessToken, generateRefreshToken } from './user.controller';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Ticket from '../models/ticket.model';
 import type { IRequest } from '../types/global.type';
 import type { ITicket } from '../types/ticket.type';
 import { ApiResponse } from '../utils/apiResponse';
+import { sendEmail } from '../utils/email';
+import { getRandomInt } from '../utils/functions';
 
 export const getTicket = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
@@ -53,29 +56,27 @@ export const checkTicket = async (req: Request, res: Response): Promise<ApiRespo
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const ticket: ITicket | null = await Ticket.findOne({ ticketId }).select(['-__v', '-_id']).populate('user');
+    const ticket: ITicket | null = await Ticket.findOne({ ticketId }).select(['-__v']).populate('user');
     if (!ticket) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
 
-    const ticketBase64 = Buffer.from(
-      JSON.stringify({
-        id: ticket.user.id,
-        firstname: ticket.user.firstname,
-        lastname: ticket.user.lastname,
-        email: ticket.user.email,
-        role: ticket.user.role,
-        cv: ticket.user.cv,
-      })
-    ).toString('base64');
+    let secretCode = getRandomInt();
+    const secretCodeExist = await Ticket.exists({ code: secretCode });
+
+    if (secretCodeExist) {
+      while (Ticket.exists({ code: secretCode })) {
+        secretCode = getRandomInt();
+      }
+    }
+    await Ticket.findByIdAndUpdate(ticket.id, { $set: { code: secretCode } });
+
+    sendEmail(ticket.user.email, 'Ticket checked', `Code: ${secretCode}`);
 
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
       description: HttpStatusCodesDescriptions.SUCCESS,
-      data: {
-        user: ticketBase64,
-      },
     });
   } catch (error) {
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
@@ -135,8 +136,6 @@ export const deleteTicket = async (req: Request, res: Response): Promise<ApiResp
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
-<<<<<<< Updated upstream
-=======
 
 export const validateTicket = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
@@ -188,4 +187,3 @@ export const validateTicket = async (req: IRequest, res: Response): Promise<ApiR
     return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
   }
 };
->>>>>>> Stashed changes
