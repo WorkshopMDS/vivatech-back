@@ -1,6 +1,5 @@
 import type { Response, Request } from 'express';
 
-import { generateAccessToken } from './user.controller';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Ticket from '../models/ticket.model';
