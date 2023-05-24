@@ -1,6 +1,7 @@
 import type { Document, Schema } from 'mongoose';
 
 import type { ILinks, ITimestamp } from './global.type';
+import type { IInterest } from './interest.type';
 
 export interface IUser extends ITimestamp {
   id: string;
@@ -29,6 +30,7 @@ export interface IUser extends ITimestamp {
       ref: 'CV';
     }
   ];
+  interests?: IInterest[];
 }
 
 export interface IUserDocument extends IUser, Omit<Document, 'id'> {
