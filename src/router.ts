@@ -14,6 +14,7 @@ router.use('/', routes.exhibitorRoutes);
 router.use('/', routes.interestRoutes);
 router.use('/', routes.conferenceRoutes);
 router.use('/', routes.cvRoutes);
+router.use('/', routes.journeyRoutes);
 router.get('/cache-clear', isAuthenticated, isInGroup([Roles.ADMIN]), cacheClear);
 router.use(routes.defaultRoutes);
 

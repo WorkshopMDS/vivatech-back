@@ -1,22 +1,33 @@
 import { model, Schema } from 'mongoose';
 
-import type { IParcours } from '../types/parcours.type';
+import type { IJourney } from '../types/journey.type';
 
-const parcoursSchema: Schema = new Schema(
+const journeySchema: Schema = new Schema(
   {
     title: {
       type: String,
       required: true,
     },
     description: String,
-    interests: {
-      type: String, // TODO: change this to ObjectId and link it to interests model
-    },
+    interests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Interests',
+        required: true,
+      },
+    ],
     questions: [
       {
         question: String,
         description: String,
         image: String,
+        answers: [
+          {
+            value: Number,
+            description: String,
+          },
+        ],
+        correctAnswers: [Number],
       },
     ],
     createdBy: {
@@ -48,7 +59,7 @@ const parcoursSchema: Schema = new Schema(
   }
 );
 
-parcoursSchema.set('toJSON', {
+journeySchema.set('toJSON', {
   transform(doc, ret) {
     ret.id = ret._id;
     delete ret._id;
@@ -56,4 +67,4 @@ parcoursSchema.set('toJSON', {
   },
 });
 
-export default model<IParcours>('Parcours', parcoursSchema);
+export default model<IJourney>('Journeys', journeySchema);
