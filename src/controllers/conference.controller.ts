@@ -26,9 +26,14 @@ export const getConference = async (req: Request, res: Response): Promise<ApiRes
       return new ApiResponse(res, SUCCESS);
     }
 
-    const conference: IConference | null = await Conference.findById(conferenceId)
-      .select(['-_id'])
-      .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
+    const conference: IConference | null = await Conference.findById(conferenceId).populate('speaker', [
+      'firstname',
+      'lastname',
+      'links',
+      'biography',
+      'picture',
+      'company',
+    ]);
     if (!conference) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
     }
@@ -55,9 +60,14 @@ export const getConferences = async (_: Request, res: Response): Promise<ApiResp
       return new ApiResponse(res, SUCCESS);
     }
 
-    const conferences: IConference[] = await Conference.find()
-      .select(['-_id'])
-      .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
+    const conferences: IConference[] = await Conference.find().populate('speaker', [
+      'firstname',
+      'lastname',
+      'links',
+      'biography',
+      'picture',
+      'company',
+    ]);
     const cachedConferences: boolean = cache.set('conferences', conferences);
 
     if (cachedConferences) {
