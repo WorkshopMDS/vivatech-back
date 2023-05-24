@@ -40,14 +40,14 @@ export const getExhibitor = async (req: Request, res: Response): Promise<ApiResp
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const cachedExhibitorFetched: IExhibitor[] | undefined = cache.get(`exhibitor_${id}`);
+    const cachedExhibitorFetched: IExhibitor | undefined = cache.get(`exhibitor_${id}`);
 
     if (cachedExhibitorFetched) {
       SUCCESS.data = cachedExhibitorFetched;
       return new ApiResponse(res, SUCCESS);
     }
 
-    const exhibitor: IExhibitor | null = await Exhibitor.findById(req.params.id).populate('interests');
+    const exhibitor: IExhibitor | null = await Exhibitor.findById(id).populate('interests');
 
     if (!exhibitor) {
       return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);

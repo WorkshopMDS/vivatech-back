@@ -36,3 +36,13 @@ export interface IError {
     isOperational: boolean;
   };
 }
+
+export interface IUpdatedBy {
+  user: IUser | string;
+  date: Date;
+}
+
+export interface ITimestamp {
+  createdAt?: Date;
+  updatedAt?: Date;
+}
