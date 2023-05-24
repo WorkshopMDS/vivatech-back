@@ -16,6 +16,7 @@ export const getJourneys = async (_req: Request, res: Response): Promise<ApiResp
     const cachedJourneysFetched: string | undefined = cache.get('journeys');
 
     if (cachedJourneysFetched) {
+      console.log('CACHED');
       SUCCESS.data = JSON.parse(cachedJourneysFetched);
       return new ApiResponse(res, SUCCESS);
     }

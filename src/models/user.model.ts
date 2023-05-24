@@ -51,6 +51,12 @@ const userSchema: Schema = new Schema(
     ],
     cv: String,
     cvScanned: [String],
+    interests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Interests',
+      },
+    ],
   },
   { timestamps: true }
 );

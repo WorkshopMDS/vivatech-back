@@ -96,7 +96,7 @@ export const login = async (req: Request, res: Response): Promise<ApiResponse> =
 
 export const getUsers = async (_: Request, res: Response): Promise<ApiResponse> => {
   try {
-    const users: IUser[] = await User.find().select('-id');
+    const users: IUser[] = await User.find().populate('preferences').select('-id');
     return new ApiResponse(res, {
       name: 'Success',
       httpStatusCode: HttpStatusCodes.SUCCESS,
@@ -116,7 +116,7 @@ export const getUser = async (req: IRequest, res: Response): Promise<ApiResponse
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }
 
-    const user: IUser | null = await User.findById(userId || req.user?.id);
+    const user: IUser | null = await User.findById(userId || req.user?.id).populate('preferences');
     if (!user) {
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
     }

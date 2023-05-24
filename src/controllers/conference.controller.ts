@@ -51,7 +51,7 @@ export const getConference = async (req: Request, res: Response): Promise<ApiRes
   }
 };
 
-export const getConferences = async (_: Request, res: Response): Promise<ApiResponse> => {
+export const getConferences = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {
     const cachedConferencesFetched: IConference[] | undefined = cache.get('conferences');
 
@@ -60,14 +60,9 @@ export const getConferences = async (_: Request, res: Response): Promise<ApiResp
       return new ApiResponse(res, SUCCESS);
     }
 
-    const conferences: IConference[] = await Conference.find().populate('speaker', [
-      'firstname',
-      'lastname',
-      'links',
-      'biography',
-      'picture',
-      'company',
-    ]);
+    const conferences: IConference[] = await Conference.find()
+      .populate('interests')
+      .populate('speaker', ['firstname', 'lastname', 'links', 'biography', 'picture', 'company']);
     const cachedConferences: boolean = cache.set('conferences', conferences);
 
     if (cachedConferences) {

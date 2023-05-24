@@ -25,6 +25,12 @@ const conferenceSchema: Schema = new Schema(
     startAt: Schema.Types.Date,
     endAt: Schema.Types.Date,
     stage: Number,
+    interests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Interests',
+      },
+    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'Users',
