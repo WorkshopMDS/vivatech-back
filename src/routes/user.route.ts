@@ -12,6 +12,7 @@ import {
   setUserAsSpeaker,
   updateCvScanned,
   updateUser,
+  updateUserJourneys,
 } from '../controllers/user.controller';
 import { isAuthenticated } from '../middlewares/auth.middleware';
 import { checkOwnership, isInGroup } from '../middlewares/permission.middleware';
@@ -30,6 +31,7 @@ userRoutes.get('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId
 userRoutes.patch('/user', isAuthenticated, updateUser);
 userRoutes.patch('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), updateUser);
 userRoutes.patch('/user/:userId/cv', isAuthenticated, isInGroup([Roles.ADMIN]), updateCvScanned);
+userRoutes.patch('/user/:userId/journeys', isAuthenticated, isInGroup([Roles.ADMIN]), updateUserJourneys);
 
 userRoutes.delete('/user', isAuthenticated, deleteUser);
 userRoutes.delete('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), deleteUser);
