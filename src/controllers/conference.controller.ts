@@ -57,7 +57,6 @@ export const getConferences = async (_req: Request, res: Response): Promise<ApiR
     const cachedConferencesFetched: IConference[] | undefined = cache.get('conferences');
 
     if (cachedConferencesFetched) {
-      console.log('CACHED');
       SUCCESS.data = cachedConferencesFetched;
       return new ApiResponse(res, SUCCESS);
     }
