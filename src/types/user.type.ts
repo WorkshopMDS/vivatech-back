@@ -2,6 +2,7 @@ import type { Document, Schema } from 'mongoose';
 
 import type { ILinks, ITimestamp } from './global.type';
 import type { IInterest } from './interest.type';
+import type { IJourney } from './journey.type';
 
 export interface IUser extends ITimestamp {
   id: string;
@@ -31,6 +32,12 @@ export interface IUser extends ITimestamp {
     }
   ];
   interests?: IInterest[];
+  journeys?: [
+    {
+      journey: IJourney;
+      score: number;
+    }
+  ];
 }
 
 export interface IUserDocument extends IUser, Omit<Document, 'id'> {
