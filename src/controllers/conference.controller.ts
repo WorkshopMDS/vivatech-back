@@ -1,15 +1,16 @@
 import type { Response, Request } from 'express';
-import NodeCache from 'node-cache';
+import type NodeCache from 'node-cache';
 
-import { FOURDAYSTOSECONDS, SUCCESS } from '../environments/constants.environment';
+import { SUCCESS } from '../environments/constants.environment';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Conference from '../models/conference.model';
 import type { IConference } from '../types/conference.type';
 import type { IRequest } from '../types/global.type';
 import { ApiResponse } from '../utils/apiResponse';
+import { getCache } from '../utils/cacheClear';
 
-const cache = new NodeCache({ stdTTL: FOURDAYSTOSECONDS });
+const cache: NodeCache = getCache();
 
 export const getConference = async (req: Request, res: Response): Promise<ApiResponse> => {
   try {
@@ -56,6 +57,7 @@ export const getConferences = async (_req: Request, res: Response): Promise<ApiR
     const cachedConferencesFetched: IConference[] | undefined = cache.get('conferences');
 
     if (cachedConferencesFetched) {
+      console.log('CACHED');
       SUCCESS.data = cachedConferencesFetched;
       return new ApiResponse(res, SUCCESS);
     }
