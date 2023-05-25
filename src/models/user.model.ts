@@ -50,11 +50,27 @@ const userSchema: Schema = new Schema(
       },
     ],
     cv: String,
-    cvScanned: [String],
+    cvScanned: [
+      {
+        firstname: String,
+        lastname: String,
+        email: String,
+        cv: String,
+      },
+    ],
     interests: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Interests',
+      },
+    ],
+    journeys: [
+      {
+        journey: {
+          type: Schema.Types.ObjectId,
+          ref: 'Journeys',
+        },
+        score: Number,
       },
     ],
   },

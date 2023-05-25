@@ -1,14 +1,15 @@
 import type { Response, Request } from 'express';
-import NodeCache from 'node-cache';
+import type NodeCache from 'node-cache';
 
-import { FOURDAYSTOSECONDS, SUCCESS } from '../environments/constants.environment';
+import { SUCCESS } from '../environments/constants.environment';
 import { Errors } from '../environments/errors.environment';
 import { HttpStatusCodes, HttpStatusCodesDescriptions } from '../environments/httpStatusCodes.environment';
 import Exhibitor from '../models/exhibitor.model';
 import type { IExhibitor } from '../types/exhibitor.type';
 import { ApiResponse } from '../utils/apiResponse';
+import { getCache } from '../utils/cacheClear';
 
-const cache = new NodeCache({ stdTTL: FOURDAYSTOSECONDS });
+const cache: NodeCache = getCache();
 
 export const getExhibitors = async (_req: Request, res: Response): Promise<ApiResponse> => {
   try {
