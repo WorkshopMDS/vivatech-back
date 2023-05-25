@@ -204,6 +204,40 @@ export const updateCvScanned = async (req: IRequest, res: Response): Promise<Api
   }
 };
 
+export const updateUserJourneys = async (req: IRequest, res: Response): Promise<ApiResponse> => {
+  try {
+    const { userId } = req.params;
+    const { journeys } = req.body;
+
+    if (!userId && !journeys) {
+      return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
+    }
+
+    const user: IUser | null = await User.findByIdAndUpdate(
+      userId || req.user?.id,
+      {
+        $push: {
+          journeys,
+        },
+      },
+      { returnDocument: 'after' }
+    ).select('-id');
+
+    if (!user) {
+      return new ApiResponse(res, Errors.NOT_FOUND_RESPONSE);
+    }
+
+    return new ApiResponse(res, {
+      name: 'Success',
+      httpStatusCode: HttpStatusCodes.SUCCESS,
+      description: HttpStatusCodesDescriptions.SUCCESS,
+      data: user,
+    });
+  } catch (error) {
+    return new ApiResponse(res, Errors.INTERNAL_SERVER_RESPONSE, error);
+  }
+};
+
 export const deleteUser = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
     const { userId } = req.params;
