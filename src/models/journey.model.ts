@@ -9,6 +9,8 @@ const journeySchema: Schema = new Schema(
       required: true,
     },
     description: String,
+    duration: Number,
+    image: String,
     interests: [
       {
         type: Schema.Types.ObjectId,
@@ -21,6 +23,7 @@ const journeySchema: Schema = new Schema(
         question: String,
         description: String,
         image: String,
+        stand: String,
         answers: [
           {
             value: Number,
