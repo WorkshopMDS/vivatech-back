@@ -10,6 +10,7 @@ import {
   refreshAccessToken,
   register,
   setUserAsSpeaker,
+  updateCvScanned,
   updateUser,
 } from '../controllers/user.controller';
 import { isAuthenticated } from '../middlewares/auth.middleware';
@@ -28,6 +29,7 @@ userRoutes.get('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId
 
 userRoutes.patch('/user', isAuthenticated, updateUser);
 userRoutes.patch('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), updateUser);
+userRoutes.patch('/user/:userId/cv', isAuthenticated, isInGroup([Roles.ADMIN]), updateCvScanned);
 
 userRoutes.delete('/user', isAuthenticated, deleteUser);
 userRoutes.delete('/user/:userId', isAuthenticated, checkOwnership('Users', 'userId', '_id'), deleteUser);
