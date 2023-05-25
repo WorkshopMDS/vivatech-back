@@ -74,7 +74,7 @@ export const getJourney = async (req: Request, res: Response): Promise<ApiRespon
 
 export const addJourney = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
-    const { title, description, interests, questions }: IJourney = req.body;
+    const { title, description, interests, questions, image, duration }: IJourney = req.body;
 
     if (!title || !description || !interests || !questions) {
       return new ApiResponse(res, Errors.BAD_REQUEST_RESPONSE);
@@ -85,6 +85,8 @@ export const addJourney = async (req: IRequest, res: Response): Promise<ApiRespo
       description,
       interests,
       questions,
+      image,
+      duration,
       createdBy: req.user?.id,
     });
 

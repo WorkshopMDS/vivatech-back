@@ -20,6 +20,8 @@ export interface IQuestion {
 export interface IJourney extends Document, ITimestamp {
   title: string;
   description?: string;
+  image?: string;
+  duration?: number;
   interests: IInterest[];
   questions: IQuestion[];
   createdBy: IUser | string;
