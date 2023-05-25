@@ -57,6 +57,15 @@ const userSchema: Schema = new Schema(
         ref: 'Interests',
       },
     ],
+    journeys: [
+      {
+        journey: {
+          type: Schema.Types.ObjectId,
+          ref: 'Journeys',
+        },
+        score: Number,
+      },
+    ],
   },
   { timestamps: true }
 );
