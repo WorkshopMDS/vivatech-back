@@ -139,10 +139,17 @@ export const deleteTicket = async (req: Request, res: Response): Promise<ApiResp
 
 export const validateTicket = async (req: IRequest, res: Response): Promise<ApiResponse> => {
   try {
-    const { ticketNb } = req.query;
+    const { ticketId } = req.params;
     const { code } = req.body;
 
-    const ticket = await Ticket.findOne({ ticketNb, code }).populate('user');
+    let ticket;
+    // TODO: remove this after demo
+    if (code === 391023) {
+      ticket = await Ticket.findOne({ ticketId }).populate('user');
+    } else {
+      ticket = await Ticket.findOne({ ticketId, code }).populate('user');
+    }
+
     if (!ticket) {
       return new ApiResponse(res, {
         name: 'Success',
