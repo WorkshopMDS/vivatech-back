@@ -1,4 +1,4 @@
-import type { Document, Schema } from 'mongoose';
+import type { Document } from 'mongoose';
 
 import type { ILinks, ITimestamp } from './global.type';
 import type { IInterest } from './interest.type';
@@ -21,14 +21,13 @@ export interface IUser extends ITimestamp {
   accessToken?: string;
   refreshToken?: string;
   isSpeaker?: boolean;
-  cv?: {
-    type: Schema.Types.ObjectId;
-    ref: 'CV';
-  };
+  cv?: string;
   cvScanned?: [
     {
-      type: Schema.Types.ObjectId;
-      ref: 'CV';
+      firstname: string;
+      lastname: string;
+      email: string;
+      cv: string;
     }
   ];
   interests?: IInterest[];
